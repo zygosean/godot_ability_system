@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://cko36i6gstt1g"]
+
+[ext_resource type="Script" uid="uid://b1iai4lwmk85j" path="res://UI/message/interact_message.gd" id="1_cr53o"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_cr53o"]
+font_size = 32
+outline_size = 5
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 0.843137)
+
+[node name="InteractMessage" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+script = ExtResource("1_cr53o")
+
+[node name="Message" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -146.0
+offset_right = 146.0
+offset_bottom = 45.0
+grow_horizontal = 2
+text = "DEFAULT MESSAGE"
+label_settings = SubResource("LabelSettings_cr53o")

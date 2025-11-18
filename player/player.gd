@@ -1,0 +1,219 @@
+class_name Player extends CharacterBody3D
+
+signal highlight
+signal unhighlight
+
+@export_subgroup("Movement")
+@export var MOVE_FORWARD : String = "move_forward"
+@export var MOVE_BACKWARD : String = "move_backward"
+@export var MOVE_RIGHT : String = "move_right"
+@export var MOVE_LEFT : String = "move_left"
+@export var movement_speed : float = 1.0
+@export var sprint_multi : float = 1.5
+
+@export_subgroup("Abilities")
+@export var BASIC_ATTACK : String = "basic_attack"
+@export var SECONDARY_ATTACK : String = "secondary_attack"
+@export var ABILITY_1 : String = "ability_1"
+@export var ABILITY_2 : String = "ability_2"
+@export var ABILITY_3 : String = "ability_3"
+@export var ABILITY_4 : String = "ability_4"
+@export var DODGE : String = "dodge"
+@export var JUMP : String = "jump"
+
+@export_subgroup("Actions")
+@export var INTERACT : String = "interact"
+@export var DEBUG : String = "debug"
+@export var INVENTORY : String = "inventory"
+
+@export_subgroup("Mouse")
+@export var MOUSE_ACCEL_STATE : bool = true
+@export var MOUSE_SENS : float = 0.005
+@export var MOUSE_ACCEL : float = 50
+@export var MOUSE_INVERT : bool = true
+
+@export_subgroup("Clamp Head Rotation")
+@export var CLAMP_HEAD_ROTATION := false # Enable head rotation clamping
+@export var CLAMP_HEAD_ROTATION_MIN := -80.0 # Min head rotation
+@export var CLAMP_HEAD_ROTATION_MAX := 80.0 # Max head rotation
+
+# Advanced Settings
+@export_category("Advanced")
+@export var UPDATE_ON_PHYSICS := true # Should the update happen on physics ticks?
+
+# Inventory
+@export_category("Inventory")
+@export var inventory_menu : SpatialInventory
+
+var move_direction := Vector3.ZERO
+var rotation_target_yaw : float
+var rotation_target_pitch : float
+
+var last_target
+var this_target
+
+var input : String
+
+var hud : HUD
+
+@onready var camera_base := $CameraBase
+@onready var camera := $CameraBase/SpringArm3D/Camera3D
+@onready var mesh_instance := $CollisionShape3D/Skeleton3D/MeshInstance3D
+@onready var ability_system_component := $AbilitySystemComponent
+@onready var inventory_component : InventoryComponent = $InventoryComponent
+@onready var item_trace := $CameraBase/SpringArm3D/Camera3D/ItemTrace
+
+@onready var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * ProjectSettings.get_setting("physics/3d/default_gravity_vector")
+
+@onready var hud_scn := load("res://inventory/UI/HUD/HUD.tscn")
+
+func _ready():
+	move_direction = camera_base.global_rotation
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	
+	up_direction = Vector3.UP
+	
+	hud = hud_scn.instantiate()
+	add_child(hud)
+	
+	inventory_component.set_inventory_menu()
+	inventory_menu = inventory_component.inventory_menu
+	
+	ability_system_component.add_startup_abilities()
+	for ability in ability_system_component.abilities:
+		print(ability.input_action)
+	#add_child(inventory_menu)
+	
+	_connect_signals()
+	
+func _connect_signals():
+	inventory_component.on_no_room_in_inventory.connect(hud.show_interact_message.bind("NO ROOM IN INVENTORY"))
+	inventory_component.connect_add_item()
+	inventory_component.inv_hover_item_created.connect(hud.add_hover_item)
+	
+	
+func _process(delta: float):
+	if !UPDATE_ON_PHYSICS:
+		_handle_input(delta) # Handle player input
+		rotate_player(delta) # Apply player and camera rotation
+		
+	_trace_for_item()
+	
+	
+func _physics_process(delta: float) -> void:
+	_handle_input(delta)
+	rotate_player(delta)
+	
+func _handle_input(delta: float):
+	var move_direction : Vector3 # Initial movement direction is zero
+	
+	# Camera pointing away from ground not covered by this
+	if Input.is_action_pressed("move_forward"):
+		move_direction.z += movement_speed * 10
+	if Input.is_action_pressed("move_backward"):
+		move_direction.z -= movement_speed * 10
+	if Input.is_action_pressed("move_left"):
+		move_direction.x -= movement_speed * 10
+	if Input.is_action_pressed("move_right"):
+		move_direction.x += movement_speed * 10
+		
+	if Input.is_action_pressed("ability_1"):
+		if not is_instance_valid(ability_system_component): return
+
+		ability_system_component.handle_input("ability_1")
+		
+		#Actions
+	if Input.is_action_just_pressed("interact"):
+		interact()
+		
+	if Input.is_action_just_pressed("debug"):
+		InventoryStatics.debug_print_grid_slot_status(inventory_component.inventory_menu.grid_equippable)
+		
+	if Input.is_action_just_pressed("inventory"):
+		inventory_component.toggle_inventory()
+		
+	if Input.is_action_just_pressed("escape"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		
+	#move_direction = move_direction.normalized()
+		
+	var cam_xform = camera.global_transform
+	
+	var forward = -cam_xform.basis.z
+	var right = cam_xform.basis.x
+	var up = cam_xform.basis.y
+		
+	velocity = (forward * move_direction.z + right * move_direction.x) * movement_speed
+	if !is_on_floor():
+		velocity += gravity
+	
+	set_velocity(velocity)
+	set_up_direction(Vector3.UP)
+	move_and_slide()
+
+func _input(event):
+		# Process mouse motion when the mouse is captured
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		set_rotation_target(event.relative)
+		
+		
+func set_rotation_target(mouse_motion: Vector2):
+	if MOUSE_INVERT :
+		rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
+		rotation_target_pitch += mouse_motion.y * MOUSE_SENS
+	else:
+		rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
+		rotation_target_pitch += -mouse_motion.y * MOUSE_SENS
+	if CLAMP_HEAD_ROTATION:
+		rotation_target_pitch = clamp(rotation_target_pitch, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
+	
+func rotate_player(delta):
+	if MOUSE_ACCEL_STATE:
+		# Apply spherical interpolation (slerp) for smooth rotation
+		var current_quat = camera_base.quaternion
+		var target_quat = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
+		camera_base.quaternion = target_quat
+		mesh_instance.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
+		up_direction = Vector3.UP
+	else:
+		# If mouse acceleration is off, directly set to target rotation
+		quaternion = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
+		
+func interact():
+	if is_instance_valid(this_target) and InventoryStatics.has_item_component(this_target):
+		inventory_component.try_add_item(this_target.item_component)
+		this_target.item_component.on_picked_up()
+		print("Inventory item list: ", inventory_component.inventory_list)
+
+func _trace_for_item():
+	var is_targeting_item : bool
+	last_target = this_target
+	
+	if is_instance_valid(item_trace.get_collider()):
+		this_target = item_trace.get_collider().get_owner()
+	else:
+		this_target = null
+		
+	if this_target == last_target: return
+		
+	_highlight_item()
+				
+func _highlight_item():
+	if is_instance_valid(this_target) and this_target is Item:
+		for fragment in this_target.item_component.fragments:
+			if fragment is HighlightFragment:
+				fragment.highlight()
+				var interact_actions = InputMap.action_get_events("interact")
+				var interact_button : String = interact_actions[0].as_text().trim_suffix(" (Physical)")
+				hud.set_display_message("Press '" + interact_button + "' to pick up Item", true)
+				
+	if is_instance_valid(last_target) and last_target is Item:
+		for fragment in last_target.item_component.fragments:
+			if fragment is HighlightFragment:
+				fragment.unhighlight()
+				hud.hide_message(hud.display_message)
+
+		

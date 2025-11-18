@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://5aa3eaamvesd"]
+
+[ext_resource type="Script" uid="uid://ckiuhswhrf6t" path="res://composites/leafs/leaf_image.gd" id="1_wkx2d"]
+
+[node name="LeafImage" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_wkx2d")
+metadata/_custom_type_script = "uid://dcr3nmtk1bald"
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

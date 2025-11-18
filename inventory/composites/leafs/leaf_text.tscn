@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxmbmgnee8ny6"]
+
+[ext_resource type="Script" uid="uid://cjcw2n8rp2i8x" path="res://composites/leafs/leaf_text.gd" id="1_47otp"]
+
+[node name="LeafText" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_47otp")
+metadata/_custom_type_script = "uid://dcr3nmtk1bald"
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0

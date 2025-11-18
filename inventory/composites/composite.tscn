@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcrkyl5s6k051"]
+
+[ext_resource type="Script" uid="uid://bqvo2stveshdy" path="res://composites/composite.gd" id="1_mxf2r"]
+
+[node name="Composite" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_mxf2r")
+metadata/_custom_type_script = "uid://bqvo2stveshdy"

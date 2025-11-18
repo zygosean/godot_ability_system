@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://22da3km68flr"]
+
+[ext_resource type="Script" uid="uid://ddtj3vlvghdr8" path="res://UI/message/display_message.gd" id="1_35kpl"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3fqrc"]
+font_size = 28
+outline_size = 5
+
+[node name="DisplayMessage" type="Control"]
+custom_minimum_size = Vector2(500, 100)
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_right = 250.0
+offset_bottom = 100.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("1_35kpl")
+
+[node name="Message" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -96.5
+offset_right = 96.5
+offset_bottom = 39.0
+grow_horizontal = 2
+text = "DEFAULT TEXT"
+label_settings = SubResource("LabelSettings_3fqrc")

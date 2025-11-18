@@ -1,0 +1,90 @@
+[gd_scene load_steps=21 format=3 uid="uid://c5bwmvoq7s5dh"]
+
+[ext_resource type="Script" uid="uid://ccenrks0tafbs" path="res://inventory/item/item.gd" id="1_4ojsc"]
+[ext_resource type="Script" uid="uid://dgbqxnchhnsx5" path="res://inventory/fragments/item_fragments/item_name_fragment.gd" id="2_6t40p"]
+[ext_resource type="Script" uid="uid://dchniaapr0htf" path="res://inventory/item/item_manifest.gd" id="2_7ay05"]
+[ext_resource type="Script" uid="uid://d3pl6j0vi1xqv" path="res://inventory/fragments/general_fragments/highlight_fragment.gd" id="3_0yflk"]
+[ext_resource type="Script" uid="uid://bh7a8b36t075j" path="res://inventory/fragments/parent_fragment.gd" id="5_tso6w"]
+[ext_resource type="Script" uid="uid://bndnd1sjwy5j2" path="res://inventory/fragments/item_fragments/item_grid_fragment.gd" id="6_nmmfv"]
+[ext_resource type="Texture2D" uid="uid://dv62tp1jr0qij" path="res://assets/item test.png" id="8_x0qu1"]
+[ext_resource type="Script" uid="uid://domgjopsp0nxe" path="res://inventory/fragments/item_fragments/item_icon_fragment.gd" id="9_7voaq"]
+[ext_resource type="Script" uid="uid://4l8qdughq8np" path="res://inventory/fragments/item_fragments/item_stackable_fragment.gd" id="9_v5k0q"]
+[ext_resource type="Script" uid="uid://xqoahxw3xhy1" path="res://inventory/components/item_component/item_component.gd" id="9_x0qu1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tso6w"]
+albedo_color = Color(1, 0.0156863, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qe1ho"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qe1ho"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_tso6w"]
+
+[sub_resource type="Resource" id="Resource_v5k0q"]
+resource_local_to_scene = true
+script = ExtResource("3_0yflk")
+fragment_tag = 4
+metadata/_custom_type_script = "uid://d3pl6j0vi1xqv"
+
+[sub_resource type="Resource" id="Resource_cyhyo"]
+resource_local_to_scene = true
+script = ExtResource("6_nmmfv")
+grid_size = Vector2i(4, 4)
+grid_padding = 0.0
+fragment_tag = 3
+metadata/_custom_type_script = "uid://bndnd1sjwy5j2"
+
+[sub_resource type="Resource" id="Resource_jfrtr"]
+script = ExtResource("9_7voaq")
+icon = ExtResource("8_x0qu1")
+icon_dimensions = Vector2(0, 0)
+fragment_tag = 5
+metadata/_custom_type_script = "uid://domgjopsp0nxe"
+
+[sub_resource type="Resource" id="Resource_4l2ha"]
+script = ExtResource("2_6t40p")
+item_name = "test"
+item_description_template = "test a lot"
+fragment_tag = 6
+metadata/_custom_type_script = "uid://dgbqxnchhnsx5"
+
+[sub_resource type="Resource" id="Resource_7voaq"]
+script = ExtResource("9_v5k0q")
+max_stack_size = 5
+stack_count = 2
+fragment_tag = 11
+metadata/_custom_type_script = "uid://4l8qdughq8np"
+
+[sub_resource type="Resource" id="Resource_4nbge"]
+script = ExtResource("2_7ay05")
+item_category = 0
+fragments = Array[ExtResource("5_tso6w")]([SubResource("Resource_v5k0q"), SubResource("Resource_cyhyo"), SubResource("Resource_jfrtr"), SubResource("Resource_4l2ha"), SubResource("Resource_7voaq")])
+fragment_tags = Array[int]([])
+item_type = &""
+tags = PackedStringArray()
+metadata/_custom_type_script = "uid://dchniaapr0htf"
+
+[node name="Item" type="Node3D"]
+script = ExtResource("1_4ojsc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+layers = 512
+material_override = SubResource("StandardMaterial3D_tso6w")
+mesh = SubResource("BoxMesh_qe1ho")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 513
+collision_mask = 513
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_qe1ho")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_tso6w")
+
+[node name="ItemComponent" type="Node" parent="." groups=["octod_ggs_tagged_node_group"]]
+script = ExtResource("9_x0qu1")
+item_manifest = SubResource("Resource_4nbge")
+metadata/_custom_type_script = "uid://xqoahxw3xhy1"
+metadata/octod_ggs_tagged_node = PackedStringArray("ItemTypes.Cube")

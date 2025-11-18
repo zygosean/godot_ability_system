@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://bjkcehheplq3k"]
+
+[ext_resource type="Script" uid="uid://c1k4hfruqub2b" path="res://inventory/inventory/inventory_item/inventory_item.gd" id="1_j6fhn"]
+[ext_resource type="Script" uid="uid://bh7a8b36t075j" path="res://inventory/fragments/parent_fragment.gd" id="2_anh48"]
+[ext_resource type="Script" uid="uid://dchniaapr0htf" path="res://inventory/item/item_manifest.gd" id="7_hich7"]
+
+[sub_resource type="Resource" id="Resource_n1rio"]
+script = ExtResource("7_hich7")
+item_category = 0
+fragments = Array[ExtResource("2_anh48")]([])
+fragment_tags = Array[int]([])
+item_type = &""
+tags = PackedStringArray()
+metadata/_custom_type_script = "uid://dchniaapr0htf"
+
+[sub_resource type="LabelSettings" id="LabelSettings_j6fhn"]
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[node name="InventoryItem" type="Control"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_j6fhn")
+item_manifest = SubResource("Resource_n1rio")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -28.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "999"
+label_settings = SubResource("LabelSettings_j6fhn")
+horizontal_alignment = 2
+vertical_alignment = 2

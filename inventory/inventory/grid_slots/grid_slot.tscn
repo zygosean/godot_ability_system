@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://d01yyfoixq13j"]
+
+[ext_resource type="Script" uid="uid://d3qckbashmyri" path="res://inventory/inventory/grid_slots/grid_slot.gd" id="1_f2omw"]
+[ext_resource type="Texture2D" uid="uid://d2fbsb4gugjp4" path="res://assets/icon test occupied.png" id="2_givc2"]
+[ext_resource type="Texture2D" uid="uid://bete7jrg6rohd" path="res://assets/icon test.png" id="2_i4565"]
+[ext_resource type="Texture2D" uid="uid://f00q0cysg7pk" path="res://assets/unoccupiedtest.png" id="3_pjyaa"]
+
+[node name="GridSlot" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_f2omw")
+occupied_texture = ExtResource("2_givc2")
+unoccupied_texture = ExtResource("3_pjyaa")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_i4565")

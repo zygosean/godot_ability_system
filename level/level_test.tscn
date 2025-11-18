@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://dyfgd7eq7v11u"]
+
+[ext_resource type="PackedScene" uid="uid://c5bwmvoq7s5dh" path="res://item/item.tscn" id="1_qr3a6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_76lkf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_76lkf"]
+albedo_color = Color(0.741176, 0.690196, 1, 1)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_76lkf"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[node name="LevelTest" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(29.3715, 0, 0, 0, 0.244776, 0, 0, 0, -14.0039, 0, 0, 0)
+mesh = SubResource("BoxMesh_76lkf")
+surface_material_override/0 = SubResource("StandardMaterial3D_76lkf")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_76lkf")
+
+[node name="Item" parent="." instance=ExtResource("1_qr3a6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.1989, 0.622389, 2.57578)
+
+[node name="Item2" parent="." instance=ExtResource("1_qr3a6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5252, 0.622388, -1.95496)
+
+[node name="Item3" parent="." instance=ExtResource("1_qr3a6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.85248, 0.622388, -4.10657)

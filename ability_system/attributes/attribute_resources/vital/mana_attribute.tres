@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="VitalAttribute" load_steps=2 format=3 uid="uid://cgtr46vpvopho"]
+
+[ext_resource type="Script" uid="uid://dgqsd2n838pwa" path="res://ability_system/attributes/attribute_resources/vital/vital_attribute.gd" id="1_qq5c8"]
+
+[resource]
+script = ExtResource("1_qq5c8")
+attribute_type = 2
+attribute = &""
+value = 100.0
+max_value = 100.0
+metadata/_custom_type_script = "uid://dgqsd2n838pwa"

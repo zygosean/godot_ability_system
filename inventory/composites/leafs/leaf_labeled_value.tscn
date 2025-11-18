@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3g1xwp7pish6"]
+
+[ext_resource type="Script" uid="uid://dtvs400mn44a1" path="res://composites/leafs/leaf_labeled_value.gd" id="1_k5wlo"]
+
+[node name="LeafLabeledValue" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_k5wlo")
+metadata/_custom_type_script = "uid://dcr3nmtk1bald"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 2
