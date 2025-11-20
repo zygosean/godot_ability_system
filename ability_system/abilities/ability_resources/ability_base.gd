@@ -6,9 +6,18 @@ signal ability_activated(ability : AbilityBase)
 enum AbilityType { WEAPON, SPELL, MOVEMENT }
 enum AbilityInputSlot { BASIC, SECONDARY, ONE, TWO, THREE, FOUR, DODGE, JUMP, NONE}
 
+
 @export var cost : float = 0.0
 @export var cooldown : float = 0.0
+@export var action_speed : float = 1.0
 @export var input_action : AbilityInputSlot = AbilityInputSlot.NONE
+
+# Can have this only show by using a @tool node
+@export_subgroup("Damage")
+@export var min_damage : float = 0.0
+@export var max_damage : float = 0.0
+
+var in_action : bool = false
 
 ## Child resource to contain activation logic
 func activate(component : AbilitySystemComponent):
@@ -16,6 +25,7 @@ func activate(component : AbilitySystemComponent):
 	
 func _apply_effect(component : AbilitySystemComponent, attribute_set : AttributeSetBase):
 	pass
+		
 
 func is_on_cooldown() -> bool:
 	return false

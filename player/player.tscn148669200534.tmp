@@ -1,0 +1,62 @@
+[gd_scene load_steps=9 format=3 uid="uid://ceo0raxqkvfm3"]
+
+[ext_resource type="Script" uid="uid://b8ajunmh5dmnh" path="res://player/player.gd" id="1_oul6g"]
+[ext_resource type="Script" uid="uid://b1kscclh4m30y" path="res://inventory/components/inventory_component.gd" id="2_rkbax"]
+[ext_resource type="Script" uid="uid://blsnp5ey8ycyw" path="res://ability_system/components/ability_system_component.gd" id="3_g1dw6"]
+[ext_resource type="Script" uid="uid://gaby05cg34yr" path="res://ability_system/abilities/ability_resources/ability_base.gd" id="4_qjkh3"]
+[ext_resource type="Script" uid="uid://bux82135ahkg" path="res://ability_system/abilities/ability_resources/weapon_abilities/sword_abilities/sword_ability.gd" id="5_qjkh3"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
+radius = 0.55
+height = 2.1
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_oul6g"]
+
+[sub_resource type="Resource" id="Resource_g6k8r"]
+script = ExtResource("5_qjkh3")
+uses_ammo = false
+cost = 0.0
+cooldown = 0.0
+action_speed = 1.0
+input_action = 2
+min_damage = 0.0
+max_damage = 0.0
+metadata/_custom_type_script = "uid://bux82135ahkg"
+
+[node name="Player" type="CharacterBody3D"]
+floor_stop_on_slope = false
+script = ExtResource("1_oul6g")
+CLAMP_HEAD_ROTATION = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_kqu6x")
+
+[node name="Skeleton3D" type="Skeleton3D" parent="CollisionShape3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D/Skeleton3D"]
+mesh = SubResource("CapsuleMesh_oul6g")
+
+[node name="CameraBase" type="Node3D" parent="."]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraBase"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+spring_length = 10.0
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="CameraBase/SpringArm3D"]
+
+[node name="ItemTrace" type="RayCast3D" parent="CameraBase/SpringArm3D/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00611687, 0.00854588, 0.00039053)
+target_position = Vector3(0, 0, -100)
+collision_mask = 512
+debug_shape_custom_color = Color(0.726872, 3.19588e-05, 0.53824, 1)
+debug_shape_thickness = 5
+
+[node name="InventoryComponent" type="Node" parent="."]
+script = ExtResource("2_rkbax")
+metadata/_custom_type_script = "uid://b1kscclh4m30y"
+
+[node name="AbilitySystemComponent" type="Node" parent="."]
+script = ExtResource("3_g1dw6")
+startup_abilities = Array[ExtResource("4_qjkh3")]([SubResource("Resource_g6k8r")])
+metadata/_custom_type_script = "uid://blsnp5ey8ycyw"

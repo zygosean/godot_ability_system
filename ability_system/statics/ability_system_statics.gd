@@ -1,5 +1,7 @@
 class_name AbilitySystemStatics extends Object
 
+enum FragmentTags{ NAME, AMMO, ICON, ANIMATION }
+
 static func get_input_from_string(action : StringName) -> AbilityBase.AbilityInputSlot:
 	match action:
 		"basic_attack":
@@ -19,3 +21,7 @@ static func get_input_from_string(action : StringName) -> AbilityBase.AbilityInp
 		"jump":
 			return AbilityBase.AbilityInputSlot.JUMP
 	return AbilityBase.AbilityInputSlot.NONE
+
+## returns the owner of the Ability System Component
+static func get_asc_owner(component : AbilitySystemComponent) -> Node3D:
+	return component.owner as Node3D

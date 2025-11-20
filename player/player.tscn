@@ -1,37 +1,154 @@
-[gd_scene load_steps=9 format=3 uid="uid://ceo0raxqkvfm3"]
+[gd_scene load_steps=36 format=3 uid="uid://ceo0raxqkvfm3"]
 
 [ext_resource type="Script" uid="uid://b8ajunmh5dmnh" path="res://player/player.gd" id="1_oul6g"]
+[ext_resource type="PackedScene" uid="uid://c4arhh6me17h0" path="res://assets/player/basic/mannequiny-0.3.0.glb" id="2_8t03j"]
 [ext_resource type="Script" uid="uid://b1kscclh4m30y" path="res://inventory/components/inventory_component.gd" id="2_rkbax"]
 [ext_resource type="Script" uid="uid://blsnp5ey8ycyw" path="res://ability_system/components/ability_system_component.gd" id="3_g1dw6"]
 [ext_resource type="Script" uid="uid://gaby05cg34yr" path="res://ability_system/abilities/ability_resources/ability_base.gd" id="4_qjkh3"]
 [ext_resource type="Script" uid="uid://bux82135ahkg" path="res://ability_system/abilities/ability_resources/weapon_abilities/sword_abilities/sword_ability.gd" id="5_qjkh3"]
+[ext_resource type="Script" uid="uid://b0ye4es03q15" path="res://ability_system/attributes/attribute_resources/attribute_base.gd" id="6_boad6"]
+[ext_resource type="Script" uid="uid://dhqmbc5bt6kgy" path="res://ability_system/abilities/ability_resources/aerial_abilities/jump_abilities/jump_ability.gd" id="6_rgyib"]
+[ext_resource type="Script" uid="uid://cod43lcnvd1va" path="res://ability_system/abilities/ability_resources/dodge_abilities/dodge_abilities/basic_dodge_ability.gd" id="7_hg6s5"]
+[ext_resource type="Script" uid="uid://dgqsd2n838pwa" path="res://ability_system/attributes/attribute_resources/vital/vital_attribute.gd" id="7_rgyib"]
+[ext_resource type="Curve" uid="uid://d37ut8uh5cqra" path="res://assets/player/basic/animation/xfade_curve_basic.tres" id="11_ebec5"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
-radius = 0.55
-height = 2.1
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_oul6g"]
 
 [sub_resource type="Resource" id="Resource_g6k8r"]
 script = ExtResource("5_qjkh3")
 uses_ammo = false
 cost = 0.0
 cooldown = 0.0
+action_speed = 1.0
 input_action = 2
+min_damage = 0.0
+max_damage = 0.0
 metadata/_custom_type_script = "uid://bux82135ahkg"
 
+[sub_resource type="Resource" id="Resource_8t03j"]
+script = ExtResource("6_rgyib")
+jump_velocity = 50.0
+does_use_gravity = true
+cost = 0.0
+cooldown = 0.0
+action_speed = 0.25
+input_action = 7
+min_damage = 0.0
+max_damage = 0.0
+metadata/_custom_type_script = "uid://dhqmbc5bt6kgy"
+
+[sub_resource type="Resource" id="Resource_2ieo8"]
+script = ExtResource("7_hg6s5")
+dodge_impulse = 40.0
+invuln_time = 0.0
+cost = 0.0
+cooldown = 0.0
+action_speed = 1.0
+input_action = 6
+min_damage = 0.0
+max_damage = 0.0
+metadata/_custom_type_script = "uid://cod43lcnvd1va"
+
+[sub_resource type="Resource" id="Resource_hg6s5"]
+script = ExtResource("7_rgyib")
+attribute_type = 0
+attribute = &""
+value = 0.0
+max_value = 0.0
+metadata/_custom_type_script = "uid://dgqsd2n838pwa"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2ieo8"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ebec5"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_yllr7"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_wodsf"]
+xfade_time = 0.1
+xfade_curve = ExtResource("11_ebec5")
+advance_mode = 2
+advance_condition = &"move"
+
+[sub_resource type="Curve" id="Curve_2ieo8"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.777778, 0.727991), 0.836859, 0.836859, 0, 0, Vector2(0.925926, 0.869128), 0.594211, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_32hag"]
+xfade_time = 0.4
+xfade_curve = SubResource("Curve_2ieo8")
+advance_mode = 2
+advance_condition = &"idle"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_e7oew"]
+states/idle/node = SubResource("AnimationNodeAnimation_2ieo8")
+states/idle/position = Vector2(461.333, 73.3333)
+states/run/node = SubResource("AnimationNodeAnimation_ebec5")
+states/run/position = Vector2(575.333, 184)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_yllr7"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_wodsf"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_32hag")]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_yllr7"]
+animation = &"air_jump"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kb6p2"]
+animation = &"air_jump_anticipation"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_wodsf"]
+animation = &"air_land"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_tqiix"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_e7oew"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c35mf"]
+advance_mode = 2
+advance_condition = &"land"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_65viv"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_65viv"]
+states/End/position = Vector2(1225.33, 117.333)
+states/air_jump/node = SubResource("AnimationNodeAnimation_yllr7")
+states/air_jump/position = Vector2(632.667, 100.444)
+states/air_jump_anticipation/node = SubResource("AnimationNodeAnimation_kb6p2")
+states/air_jump_anticipation/position = Vector2(411.333, 99.7778)
+states/air_land/node = SubResource("AnimationNodeAnimation_wodsf")
+states/air_land/position = Vector2(828.667, 101.185)
+transitions = ["Start", "air_jump_anticipation", SubResource("AnimationNodeStateMachineTransition_tqiix"), "air_jump_anticipation", "air_jump", SubResource("AnimationNodeStateMachineTransition_e7oew"), "air_jump", "air_land", SubResource("AnimationNodeStateMachineTransition_c35mf"), "air_land", "End", SubResource("AnimationNodeStateMachineTransition_65viv")]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2ieo8"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ebec5"]
+advance_mode = 2
+advance_condition = &"jump"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_kb6p2"]
+advance_mode = 2
+advance_condition = &"landed"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_yllr7"]
+states/IdleWalkRun/node = SubResource("AnimationNodeStateMachine_e7oew")
+states/IdleWalkRun/position = Vector2(473.333, 57.3333)
+states/Jump/node = SubResource("AnimationNodeStateMachine_65viv")
+states/Jump/position = Vector2(495.333, 176)
+transitions = ["Start", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_2ieo8"), "IdleWalkRun", "Jump", SubResource("AnimationNodeStateMachineTransition_ebec5"), "Jump", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_kb6p2")]
+
 [node name="Player" type="CharacterBody3D"]
-floor_stop_on_slope = false
+safe_margin = 0.01
 script = ExtResource("1_oul6g")
 CLAMP_HEAD_ROTATION = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_kqu6x")
 
-[node name="Skeleton3D" type="Skeleton3D" parent="CollisionShape3D"]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D/Skeleton3D"]
-mesh = SubResource("CapsuleMesh_oul6g")
+[node name="mannequiny" parent="." instance=ExtResource("2_8t03j")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.969354, 0.30193)
 
 [node name="CameraBase" type="Node3D" parent="."]
 
@@ -55,5 +172,18 @@ metadata/_custom_type_script = "uid://b1kscclh4m30y"
 
 [node name="AbilitySystemComponent" type="Node" parent="."]
 script = ExtResource("3_g1dw6")
-startup_abilities = Array[ExtResource("4_qjkh3")]([SubResource("Resource_g6k8r")])
+startup_abilities = Array[ExtResource("4_qjkh3")]([SubResource("Resource_g6k8r"), SubResource("Resource_8t03j"), SubResource("Resource_2ieo8")])
+attributes = Array[ExtResource("6_boad6")]([SubResource("Resource_hg6s5")])
 metadata/_custom_type_script = "uid://blsnp5ey8ycyw"
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+root_node = NodePath("../mannequiny")
+tree_root = SubResource("AnimationNodeStateMachine_yllr7")
+anim_player = NodePath("../mannequiny/AnimationPlayer")
+parameters/conditions/jump = false
+parameters/conditions/landed = false
+parameters/IdleWalkRun/conditions/idle = false
+parameters/IdleWalkRun/conditions/move = false
+parameters/Jump/conditions/land = false
+
+[editable path="mannequiny"]

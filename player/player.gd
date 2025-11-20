@@ -1,14 +1,17 @@
+## Required modules: ability_system, inventory
 class_name Player extends CharacterBody3D
 
 signal highlight
 signal unhighlight
+
+enum State { IDLE, RUN, JUMP, DODGE, CASTING, FALLING }
 
 @export_subgroup("Movement")
 @export var MOVE_FORWARD : String = "move_forward"
 @export var MOVE_BACKWARD : String = "move_backward"
 @export var MOVE_RIGHT : String = "move_right"
 @export var MOVE_LEFT : String = "move_left"
-@export var movement_speed : float = 1.0
+@export var movement_speed : float = 10.0
 @export var sprint_multi : float = 1.5
 
 @export_subgroup("Abilities")
@@ -48,17 +51,23 @@ signal unhighlight
 var move_direction := Vector3.ZERO
 var rotation_target_yaw : float
 var rotation_target_pitch : float
+var motion : Vector2
 
 var last_target
 var this_target
 
 var input : String
-
+var gravity_test : float = 24.0
 var hud : HUD
+
+#Debugging in process
+var debug_timer_exists : bool = false
+
+
 
 @onready var camera_base := $CameraBase
 @onready var camera := $CameraBase/SpringArm3D/Camera3D
-@onready var mesh_instance := $CollisionShape3D/Skeleton3D/MeshInstance3D
+@onready var mesh_instance := $mannequiny/Skeleton3D/body_001
 @onready var ability_system_component := $AbilitySystemComponent
 @onready var inventory_component : InventoryComponent = $InventoryComponent
 @onready var item_trace := $CameraBase/SpringArm3D/Camera3D/ItemTrace
@@ -66,6 +75,13 @@ var hud : HUD
 @onready var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * ProjectSettings.get_setting("physics/3d/default_gravity_vector")
 
 @onready var hud_scn := load("res://inventory/UI/HUD/HUD.tscn")
+
+# Animation
+var state : State = State.RUN
+@export var current_anim : State = State.RUN
+
+@onready var anim_tree : AnimationTree = $AnimationTree
+
 
 func _ready():
 	move_direction = camera_base.global_rotation
@@ -80,9 +96,6 @@ func _ready():
 	inventory_menu = inventory_component.inventory_menu
 	
 	ability_system_component.add_startup_abilities()
-	for ability in ability_system_component.abilities:
-		print(ability.input_action)
-	#add_child(inventory_menu)
 	
 	_connect_signals()
 	
@@ -99,27 +112,56 @@ func _process(delta: float):
 		
 	_trace_for_item()
 	
+	_debug_timer()
 	
 func _physics_process(delta: float) -> void:
 	_handle_input(delta)
 	rotate_player(delta)
 	
+	animate(state, delta)
+	
+	
+# State machine code could have all this in there, so then the match structure would just say JumpState.animate or something
+func animate(animation : State, delta:= 0.0):
+	anim_tree.set("parameters/IdleWalkRun/conditions/move", is_on_floor() and velocity.length() > 0)
+	anim_tree.set("parameters/IdleWalkRun/conditions/idle", is_on_floor() and velocity.length() < 0.5)
+	anim_tree.set("parameters/conditions/jump", not is_on_floor())
+	anim_tree.set("parameters/conditions/landed", is_on_floor())
+	
 func _handle_input(delta: float):
 	var move_direction : Vector3 # Initial movement direction is zero
+	var cam_xform = camera.global_transform
+	var forward_flat = -cam_xform.basis.z
+	var right_flat = cam_xform.basis.x
+	forward_flat.y = 0
+	right_flat.y = 0
+	var forward = forward_flat.normalized()
+	var right = right_flat.normalized()
+
+	move_direction.z = Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward")
+	move_direction.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	move_direction = move_direction.normalized()
 	
-	# Camera pointing away from ground not covered by this
-	if Input.is_action_pressed("move_forward"):
-		move_direction.z += movement_speed * 10
-	if Input.is_action_pressed("move_backward"):
-		move_direction.z -= movement_speed * 10
-	if Input.is_action_pressed("move_left"):
-		move_direction.x -= movement_speed * 10
-	if Input.is_action_pressed("move_right"):
-		move_direction.x += movement_speed * 10
+	var horizontal_velocity = (forward * move_direction.z + right * move_direction.x) * movement_speed
+	velocity.x = horizontal_velocity.x
+	velocity.z = horizontal_velocity.z
+	
+	if is_on_floor():
+		state = State.RUN
+	
+	# Abilities
+	if Input.is_action_pressed("jump"):
+		if not is_instance_valid(ability_system_component): return
+		ability_system_component.handle_input("jump")
+		state = State.JUMP
 		
+	if Input.is_action_pressed("dodge"):
+		if not is_instance_valid(ability_system_component): return
+		ability_system_component.handle_input("dodge")
+		state = State.DODGE
+	
 	if Input.is_action_pressed("ability_1"):
 		if not is_instance_valid(ability_system_component): return
-
 		ability_system_component.handle_input("ability_1")
 		
 		#Actions
@@ -138,20 +180,12 @@ func _handle_input(delta: float):
 		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		
-	#move_direction = move_direction.normalized()
-		
-	var cam_xform = camera.global_transform
-	
-	var forward = -cam_xform.basis.z
-	var right = cam_xform.basis.x
-	var up = cam_xform.basis.y
-		
-	velocity = (forward * move_direction.z + right * move_direction.x) * movement_speed
 	if !is_on_floor():
 		velocity += gravity
+		state = State.FALLING
 	
-	set_velocity(velocity)
 	set_up_direction(Vector3.UP)
+	set_velocity(velocity)
 	move_and_slide()
 
 func _input(event):
@@ -216,4 +250,10 @@ func _highlight_item():
 				fragment.unhighlight()
 				hud.hide_message(hud.display_message)
 
-		
+## called in process()
+func _debug_timer():
+	if debug_timer_exists == false:
+		debug_timer_exists = true
+		await get_tree().create_timer(1.0).timeout
+		print(anim_tree.get("parameters/conditions/jump"))
+		debug_timer_exists = false

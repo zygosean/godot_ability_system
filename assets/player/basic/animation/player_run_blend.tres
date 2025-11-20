@@ -1,0 +1,45 @@
+[gd_resource type="AnimationNodeBlendTree" load_steps=8 format=3 uid="uid://1uk0pjm85ony"]
+
+[sub_resource type="AnimationNodeTransition" id="AnimationNodeTransition_8t03j"]
+input_0/name = "walk"
+input_0/auto_advance = false
+input_0/break_loop_at_end = false
+input_0/reset = true
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8t03j"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2ieo8"]
+animation = &"idle_to_fight"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ebec5"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_yllr7"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_8t03j"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_8t03j")
+blend_point_0/pos = Vector2(0, 0)
+blend_point_1/node = SubResource("AnimationNodeAnimation_2ieo8")
+blend_point_1/pos = Vector2(0, 1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_ebec5")
+blend_point_2/pos = Vector2(1, 1)
+blend_point_3/node = SubResource("AnimationNodeAnimation_yllr7")
+blend_point_3/pos = Vector2(1, 0)
+min_space = Vector2(0, -0.01)
+x_label = "speed"
+y_label = "in_combat"
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_2ieo8"]
+
+[resource]
+graph_offset = Vector2(-693.558, -8.15009)
+nodes/output/position = Vector2(586.667, 226.667)
+nodes/state/node = SubResource("AnimationNodeTransition_8t03j")
+nodes/state/position = Vector2(253.333, 186.667)
+nodes/walk/node = SubResource("AnimationNodeBlendSpace2D_8t03j")
+nodes/walk/position = Vector2(-413.333, 200)
+nodes/walk_speed/node = SubResource("AnimationNodeTimeScale_2ieo8")
+nodes/walk_speed/position = Vector2(-53.3333, 213.333)
+node_connections = [&"output", 0, &"state", &"state", 0, &"walk_speed", &"walk_speed", 0, &"walk"]

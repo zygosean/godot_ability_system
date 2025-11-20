@@ -2,36 +2,32 @@
 class_name AbilitySystemComponent extends Node
 
 @export var startup_abilities : Array[AbilityBase]
+@export var attributes : Array[AttributeBase]
 
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
-#
-#func _unhandled_input(event):
-	## check owner
-	#if event is InputEventAction and event.pressed:
-		#print (event)
-		#for ability in abilities:
-			#var input_found = AbilitySystemStatics.get_input_from_string(event.action)
-			#if input_found == AbilityBase.AbilityInputSlot.NONE: return
-			#activate_ability(ability)
-			
-func handle_input(event):
 
+
+func handle_input(event):
 	for ability in abilities:
-		var input_found = AbilitySystemStatics.get_input_from_string(event)
+		var input_found : AbilityBase.AbilityInputSlot = AbilitySystemStatics.get_input_from_string(event)
 		if input_found == AbilityBase.AbilityInputSlot.NONE: return
-		activate_ability(ability)
+		if input_found == ability.input_action:
+			activate_ability(ability)
 
 func activate_ability(activate : AbilityBase):
-	for ability in abilities:
-		if ability is not AbilityBase: return
-		if ability.is_on_cooldown():
-			print(ability, " is on cooldown!")
-			return
-		ability.activate(self)
+	if activate.is_on_cooldown() or activate.in_action == true:
+		# handle cooldown/action separately (action speed can be like cast speed, fire after x seconds
+		return
+	activate.activate(self)
+	activate.in_action = true
+	action_timer(activate)
+	
 
 func add_startup_abilities():
 	abilities.assign(startup_abilities)
+	print("Size of startup array: ", startup_abilities.size())
+	print("Size of abilities array: ", abilities.size())
 	
 func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.AbilityInputSlot):
 	var found_ability : AbilityBase = null
@@ -41,3 +37,7 @@ func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.Abil
 			found_ability = ability
 	if found_ability != null:
 		abilities.append(new_ability)
+		
+func action_timer(ability : AbilityBase):
+	await get_tree().create_timer(ability.action_speed).timeout
+	ability.in_action = false
