@@ -34,6 +34,7 @@ enum State { IDLE, RUN, JUMP, DODGE, CASTING, FALLING }
 @export var MOUSE_SENS : float = 0.005
 @export var MOUSE_ACCEL : float = 50
 @export var MOUSE_INVERT : bool = true
+@export var PLAYER_TURN_SPEED : float = 10
 
 @export_subgroup("Clamp Head Rotation")
 @export var CLAMP_HEAD_ROTATION := false # Enable head rotation clamping
@@ -71,6 +72,7 @@ var debug_timer_exists : bool = false
 @onready var ability_system_component := $AbilitySystemComponent
 @onready var inventory_component : InventoryComponent = $InventoryComponent
 @onready var item_trace := $CameraBase/SpringArm3D/Camera3D/ItemTrace
+@onready var player_model := $mannequiny
 
 @onready var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * ProjectSettings.get_setting("physics/3d/default_gravity_vector")
 
@@ -79,7 +81,7 @@ var debug_timer_exists : bool = false
 # Animation
 var state : State = State.RUN
 @export var current_anim : State = State.RUN
-
+@onready var anim_player : AnimationPlayer = $mannequiny/AnimationPlayer
 @onready var anim_tree : AnimationTree = $AnimationTree
 
 
@@ -210,11 +212,17 @@ func rotate_player(delta):
 		var current_quat = camera_base.quaternion
 		var target_quat = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
 		camera_base.quaternion = target_quat
-		mesh_instance.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
+		self.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
+		if self.velocity.length() > 0.1:
+			var target_rotation = atan2(velocity.x, velocity.z)
+			player_model.rotation.y = lerp_angle(mesh_instance.rotation.y, target_rotation, PLAYER_TURN_SPEED * delta)
+			$mannequiny/MeshInstance3D.rotation.y = target_rotation
 		up_direction = Vector3.UP
 	else:
 		# If mouse acceleration is off, directly set to target rotation
 		quaternion = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
+		
+
 		
 func interact():
 	if is_instance_valid(this_target) and InventoryStatics.has_item_component(this_target):
@@ -255,5 +263,6 @@ func _debug_timer():
 	if debug_timer_exists == false:
 		debug_timer_exists = true
 		await get_tree().create_timer(1.0).timeout
-		print(anim_tree.get("parameters/conditions/jump"))
+		print(mesh_instance.rotation.y)
+		#print()
 		debug_timer_exists = false

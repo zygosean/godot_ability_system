@@ -7,7 +7,10 @@ func activate(component : AbilitySystemComponent):
 	var asc_owner := AbilitySystemStatics.get_asc_owner(component)
 	if asc_owner == null: return
 	
-	if asc_owner is CharacterBody3D:
+	if asc_owner is not CharacterBody3D: return
+	if asc_owner.velocity.length() > 0.5:
 		asc_owner.velocity = asc_owner.velocity * dodge_impulse
-	
+	elif asc_owner.velocity.length() < 0.5:
+		print(asc_owner.global_transform.basis.z)
+		asc_owner.velocity = asc_owner.global_transform.basis.z * dodge_impulse
 	
