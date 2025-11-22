@@ -18,6 +18,7 @@ func _ready():
 	item_component.assign_mesh_to_highlight_frag.connect(get_mesh_for_highlight)
 	item_component.picked_up.connect(_on_picked_up)
 	item_component.init_fragments()
+	
 
 func get_mesh_for_highlight(fragment : HighlightFragment):
 	fragment.mesh = mesh_inst

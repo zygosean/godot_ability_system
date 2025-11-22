@@ -67,11 +67,11 @@ var debug_timer_exists : bool = false
 
 
 @onready var camera_base := $CameraBase
-@onready var camera := $CameraBase/SpringArm3D/Camera3D
+@onready var camera := $CameraBase/CameraRot/SpringArm3D/Camera3D
 @onready var mesh_instance := $mannequiny/Skeleton3D/body_001
 @onready var ability_system_component := $AbilitySystemComponent
 @onready var inventory_component : InventoryComponent = $InventoryComponent
-@onready var item_trace := $CameraBase/SpringArm3D/Camera3D/ItemTrace
+@onready var item_trace := $CameraBase/CameraRot/SpringArm3D/Camera3D/ItemTrace
 @onready var player_model := $mannequiny
 
 @onready var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") * ProjectSettings.get_setting("physics/3d/default_gravity_vector")
@@ -131,22 +131,27 @@ func animate(animation : State, delta:= 0.0):
 	anim_tree.set("parameters/conditions/landed", is_on_floor())
 	
 func _handle_input(delta: float):
-	var move_direction : Vector3 # Initial movement direction is zero
-	var cam_xform = camera.global_transform
-	var forward_flat = -cam_xform.basis.z
-	var right_flat = cam_xform.basis.x
-	forward_flat.y = 0
-	right_flat.y = 0
-	var forward = forward_flat.normalized()
-	var right = right_flat.normalized()
-
-	move_direction.z = Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward")
-	move_direction.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-	move_direction = move_direction.normalized()
-	
-	var horizontal_velocity = (forward * move_direction.z + right * move_direction.x) * movement_speed
-	velocity.x = horizontal_velocity.x
-	velocity.z = horizontal_velocity.z
+	#var move_direction : Vector3 # Initial movement direction is zero
+	#var cam_xform = camera.global_transform
+	#var forward_flat = -cam_xform.basis.z
+	#var right_flat = cam_xform.basis.x
+	#forward_flat.y = 0
+	#right_flat.y = 0
+	#var forward = forward_flat.normalized()
+	#var right = right_flat.normalized()
+#
+	#move_direction.z = Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward")
+	#move_direction.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	#move_direction = move_direction.normalized()
+	#
+	#var horizontal_velocity = (forward * move_direction.z + right * move_direction.x) * movement_speed
+	#velocity.x = horizontal_velocity.x
+	#velocity.z = horizontal_velocity.z
+	## Faces player in direction of movement - Add lerp if desired
+	#if horizontal_velocity.length() > 0.01:
+		#var target = global_transform.origin - horizontal_velocity
+		#target.y = 0
+		#player_model.look_at(target, Vector3.UP)
 	
 	if is_on_floor():
 		state = State.RUN
@@ -190,21 +195,22 @@ func _handle_input(delta: float):
 	set_velocity(velocity)
 	move_and_slide()
 
-func _input(event):
-		# Process mouse motion when the mouse is captured
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		set_rotation_target(event.relative)
+#
+#func _input(event):
+		## Process mouse motion when the mouse is captured
+	#if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		#set_rotation_target(event.relative)
 		
 		
-func set_rotation_target(mouse_motion: Vector2):
-	if MOUSE_INVERT :
-		rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
-		rotation_target_pitch += mouse_motion.y * MOUSE_SENS
-	else:
-		rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
-		rotation_target_pitch += -mouse_motion.y * MOUSE_SENS
-	if CLAMP_HEAD_ROTATION:
-		rotation_target_pitch = clamp(rotation_target_pitch, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
+#func set_rotation_target(mouse_motion: Vector2):
+	#if MOUSE_INVERT :
+		#rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
+		#rotation_target_pitch += mouse_motion.y * MOUSE_SENS
+	#else:
+		#rotation_target_yaw += -mouse_motion.x * MOUSE_SENS
+		#rotation_target_pitch += -mouse_motion.y * MOUSE_SENS
+	#if CLAMP_HEAD_ROTATION:
+		#rotation_target_pitch = clamp(rotation_target_pitch, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
 	
 func rotate_player(delta):
 	if MOUSE_ACCEL_STATE:
@@ -213,10 +219,7 @@ func rotate_player(delta):
 		var target_quat = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
 		camera_base.quaternion = target_quat
 		self.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
-		if self.velocity.length() > 0.1:
-			var target_rotation = atan2(velocity.x, velocity.z)
-			player_model.rotation.y = lerp_angle(mesh_instance.rotation.y, target_rotation, PLAYER_TURN_SPEED * delta)
-			$mannequiny/MeshInstance3D.rotation.y = target_rotation
+
 		up_direction = Vector3.UP
 	else:
 		# If mouse acceleration is off, directly set to target rotation
@@ -263,6 +266,6 @@ func _debug_timer():
 	if debug_timer_exists == false:
 		debug_timer_exists = true
 		await get_tree().create_timer(1.0).timeout
-		print(mesh_instance.rotation.y)
+
 		#print()
 		debug_timer_exists = false

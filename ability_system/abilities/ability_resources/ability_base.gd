@@ -21,7 +21,7 @@ var in_action : bool = false
 
 ## Child resource to contain activation logic
 func activate(component : AbilitySystemComponent):
-	pass
+	emit_signal("ability_activated", self)
 	
 func _apply_effect(component : AbilitySystemComponent, attribute_set : AttributeSetBase):
 	pass

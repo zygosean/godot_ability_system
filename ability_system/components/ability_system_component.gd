@@ -22,10 +22,14 @@ func activate_ability(activate : AbilityBase):
 	activate.activate(self)
 	activate.in_action = true
 	action_timer(activate)
-	
+
+func _ability_activated(ability : AbilityBase):
+	print("Do something here")
 
 func add_startup_abilities():
 	abilities.assign(startup_abilities)
+	for ability in abilities:
+		ability.connect("ability_activated", _ability_activated)
 	print("Size of startup array: ", startup_abilities.size())
 	print("Size of abilities array: ", abilities.size())
 	
