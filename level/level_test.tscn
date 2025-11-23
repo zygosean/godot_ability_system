@@ -1,11 +1,41 @@
-[gd_scene load_steps=5 format=3 uid="uid://dyfgd7eq7v11u"]
+[gd_scene load_steps=10 format=3 uid="uid://dyfgd7eq7v11u"]
 
-[ext_resource type="PackedScene" uid="uid://c5bwmvoq7s5dh" path="res://item/item.tscn" id="1_qr3a6"]
+[ext_resource type="PackedScene" uid="uid://c5bwmvoq7s5dh" path="res://inventory/item/item.tscn" id="1_qr3a6"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_76lkf"]
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_qr3a6"]
+frequency = 0.0695
+fractal_octaves = 8
+fractal_lacunarity = 8.0
+fractal_gain = 0.9
+fractal_weighted_strength = 0.75
+domain_warp_enabled = true
+domain_warp_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_bvlf0"]
+noise = SubResource("FastNoiseLite_qr3a6")
+
+[sub_resource type="Gradient" id="Gradient_qr3a6"]
+offsets = PackedFloat32Array(0, 0.28012, 0.614458, 0.731928, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.548193, 0.548193, 0.548193, 1, 0.593373, 0.593373, 0.593373, 1, 0.731928, 0.731928, 0.731928, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bvlf0"]
+frequency = 0.0601
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_irn66"]
+width = 40
+height = 40
+in_3d_space = true
+as_normal_map = true
+bump_strength = 16.7
+color_ramp = SubResource("Gradient_qr3a6")
+noise = SubResource("FastNoiseLite_bvlf0")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_76lkf"]
 albedo_color = Color(0.741176, 0.690196, 1, 1)
+albedo_texture = SubResource("NoiseTexture2D_bvlf0")
+roughness_texture = SubResource("NoiseTexture2D_irn66")
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_76lkf"]
 points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
@@ -13,7 +43,7 @@ points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5
 [node name="LevelTest" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(29.3715, 0, 0, 0, 0.244776, 0, 0, 0, -14.0039, 0, 0, 0)
+transform = Transform3D(140.025, 0, 0, 0, 0.244776, 0, 0, 0, -221.241, 0, 0, 0)
 mesh = SubResource("BoxMesh_76lkf")
 surface_material_override/0 = SubResource("StandardMaterial3D_76lkf")
 

@@ -9,11 +9,12 @@ func activate(component : AbilitySystemComponent):
 	if asc_owner == null: return
 	
 	if asc_owner is not CharacterBody3D: return
-	if asc_owner.velocity.length() > 0.01:
-		asc_owner.velocity = asc_owner.velocity * dodge_impulse
-	elif asc_owner.velocity.length() < 0.01:
-		# need to get the model transform here, not the Player
-		
-		asc_owner.velocity = asc_owner.global_transform.basis.z * dodge_impulse
+	if asc_owner is Player:
+		if asc_owner.velocity.length() > 0.01:
+			asc_owner.velocity = asc_owner.velocity * dodge_impulse
+		elif asc_owner.velocity.length() < 0.01:
+			# need to get the model transform here, not the Player
+			
+			asc_owner.velocity = -asc_owner.orientation.basis.z * dodge_impulse
 	
 	

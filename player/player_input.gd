@@ -1,3 +1,4 @@
+## "Glue" script
 extends MultiplayerSynchronizer
 
 
@@ -11,7 +12,7 @@ extends MultiplayerSynchronizer
 @export var CAMERA_SENS : float = 0.005
 @export var MOUSE_ACCEL : float = 50
 @export var MOUSE_INVERT : bool = true
-@export var PLAYER_TURN_SPEED : float = 10
+@export var PLAYER_TURN_SPEED : float = 50
 
 @export_subgroup("Clamp Head Rotation")
 @export var CLAMP_HEAD_ROTATION := false # Enable head rotation clamping
@@ -45,7 +46,7 @@ func _ready():
 		
 
 func _process(delta:float):
-	motion = Vector2(Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
+	motion = Vector2(Input.get_action_strength("move_left") - Input.get_action_strength("move_right"),
 					Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward"))
 	var camera_move = Vector2(Input.get_action_strength("view_right") - Input.get_action_strength("view_left"),
 					Input.get_action_strength("view_up") - Input.get_action_strength("view_down"))
@@ -67,5 +68,13 @@ func _input(event):
 		
 func rotate_camera(move : Vector2):
 	camera_base.rotate_y(-move.x)
-	camera_base.rotate_x(move.y)
-	camera_rot.rotation.x = clamp(camera_rot.rotation.x + move.y, CLAMP_HEAD_ROTATION_MIN, CLAMP_HEAD_ROTATION_MAX)
+	camera_base.orthonormalize()
+	# Example has deg_to_rad in the const var def
+	camera_rot.rotation.x = clamp(camera_rot.rotation.x + move.y, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
+
+
+func get_camera_rotation_basis() -> Basis:
+	return camera_rot.global_transform.basis
+	
+func get_camera_base_quaternion() -> Quaternion:
+	return camera_base.global_transform.basis.get_rotation_quaternion()

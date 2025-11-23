@@ -6,6 +6,9 @@ signal unhighlight
 
 enum State { IDLE, RUN, JUMP, DODGE, CASTING, FALLING }
 
+const MOTION_INTERP_SPEED : float = 14.0
+const ROTATION_INTERP_SPEED : float = 10.0
+
 @export_subgroup("Movement")
 @export var MOVE_FORWARD : String = "move_forward"
 @export var MOVE_BACKWARD : String = "move_backward"
@@ -52,7 +55,10 @@ enum State { IDLE, RUN, JUMP, DODGE, CASTING, FALLING }
 var move_direction := Vector3.ZERO
 var rotation_target_yaw : float
 var rotation_target_pitch : float
+
+var root_motion : Transform3D
 var motion : Vector2
+var orientation : Transform3D
 
 var last_target
 var this_target
@@ -64,7 +70,7 @@ var hud : HUD
 #Debugging in process
 var debug_timer_exists : bool = false
 
-
+@onready var player_input := $InputSynchronizer
 
 @onready var camera_base := $CameraBase
 @onready var camera := $CameraBase/CameraRot/SpringArm3D/Camera3D
@@ -86,6 +92,8 @@ var state : State = State.RUN
 
 
 func _ready():
+	orientation = player_model.global_transform
+	orientation.origin = Vector3()
 	move_direction = camera_base.global_rotation
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
@@ -110,7 +118,7 @@ func _connect_signals():
 func _process(delta: float):
 	if !UPDATE_ON_PHYSICS:
 		_handle_input(delta) # Handle player input
-		rotate_player(delta) # Apply player and camera rotation
+		#rotate_player(delta) # Apply player and camera rotation
 		
 	_trace_for_item()
 	
@@ -118,7 +126,7 @@ func _process(delta: float):
 	
 func _physics_process(delta: float) -> void:
 	_handle_input(delta)
-	rotate_player(delta)
+	#rotate_player(delta)
 	
 	animate(state, delta)
 	
@@ -152,7 +160,39 @@ func _handle_input(delta: float):
 		#var target = global_transform.origin - horizontal_velocity
 		#target.y = 0
 		#player_model.look_at(target, Vector3.UP)
+		
+	motion = motion.lerp(player_input.motion, MOTION_INTERP_SPEED * delta)
 	
+	var camera_basis : Basis = player_input.get_camera_rotation_basis()
+	var camera_z := camera_basis.z
+	var camera_x := camera_basis.x
+	
+	camera_z.y = 0
+	camera_z = camera_z.normalized()
+	camera_x.y = 0
+	camera_x = camera_x.normalized()
+	
+	var target : Vector3 = camera_x * motion.x + camera_z * motion.y
+	if target.length() > 0.1:
+		var q_from = orientation.basis.get_rotation_quaternion()
+		var q_to = Transform3D().looking_at(target, Vector3.UP).basis.get_rotation_quaternion()
+		orientation.basis = Basis(q_from.slerp(q_to, delta * MOTION_INTERP_SPEED))
+		#print(orientation.basis)
+	
+
+	## Root motion unused at the moment
+	root_motion = Transform3D(anim_tree.get_root_motion_rotation(), anim_tree.get_root_motion_position())
+	orientation *= root_motion
+	
+	## Better way? This works
+	if motion.length() > 0.1:
+		var h_velocity = Vector3(-target.x, 0, target.z)
+		velocity.x = h_velocity.x * movement_speed
+		velocity.z = -h_velocity.z * movement_speed
+	else:
+		velocity = Vector3()
+
+
 	if is_on_floor():
 		state = State.RUN
 	
@@ -191,10 +231,14 @@ func _handle_input(delta: float):
 		velocity += gravity
 		state = State.FALLING
 	
-	set_up_direction(Vector3.UP)
 	set_velocity(velocity)
+	set_up_direction(Vector3.UP)
 	move_and_slide()
-
+	
+	orientation.origin = Vector3()
+	orientation = orientation.orthonormalized()
+	
+	player_model.global_transform.basis = orientation.basis
 #
 #func _input(event):
 		## Process mouse motion when the mouse is captured
@@ -212,18 +256,18 @@ func _handle_input(delta: float):
 	#if CLAMP_HEAD_ROTATION:
 		#rotation_target_pitch = clamp(rotation_target_pitch, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
 	
-func rotate_player(delta):
-	if MOUSE_ACCEL_STATE:
-		# Apply spherical interpolation (slerp) for smooth rotation
-		var current_quat = camera_base.quaternion
-		var target_quat = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
-		camera_base.quaternion = target_quat
-		self.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
-
-		up_direction = Vector3.UP
-	else:
-		# If mouse acceleration is off, directly set to target rotation
-		quaternion = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
+#func rotate_player(delta):
+	#if MOUSE_ACCEL_STATE:
+		## Apply spherical interpolation (slerp) for smooth rotation
+		#var current_quat = camera_base.quaternion
+		#var target_quat = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
+		#camera_base.quaternion = target_quat
+		#self.quaternion = Quaternion(Vector3.UP, rotation_target_yaw)
+#
+		#up_direction = Vector3.UP
+	#else:
+		## If mouse acceleration is off, directly set to target rotation
+		#quaternion = Quaternion(Vector3.UP, rotation_target_yaw) * Quaternion(Vector3.RIGHT, rotation_target_pitch)
 		
 
 		
@@ -267,5 +311,5 @@ func _debug_timer():
 		debug_timer_exists = true
 		await get_tree().create_timer(1.0).timeout
 
-		#print()
+		print(velocity)
 		debug_timer_exists = false
