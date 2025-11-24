@@ -122,3 +122,7 @@ view_down={
 "deadzone": 0.2,
 "events": []
 }
+
+[physics]
+
+3d/default_gravity=4.9

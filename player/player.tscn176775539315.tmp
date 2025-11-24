@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://ceo0raxqkvfm3"]
+[gd_scene load_steps=43 format=3 uid="uid://ceo0raxqkvfm3"]
 
 [ext_resource type="Script" uid="uid://b8ajunmh5dmnh" path="res://player/player.gd" id="1_oul6g"]
 [ext_resource type="PackedScene" uid="uid://c4arhh6me17h0" path="res://assets/player/basic/mannequiny-0.3.0.glb" id="2_8t03j"]
@@ -63,28 +63,6 @@ metadata/_custom_type_script = "uid://dgqsd2n838pwa"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_32hag"]
 animation = &"dash"
-
-[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_tqiix"]
-
-[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_e7oew"]
-graph_offset = Vector2(-15.8568, -0.490356)
-nodes/Animation/node = SubResource("AnimationNodeAnimation_32hag")
-nodes/Animation/position = Vector2(319.333, 144.667)
-nodes/action_speed/node = SubResource("AnimationNodeTimeScale_tqiix")
-nodes/action_speed/position = Vector2(560, 200)
-nodes/output/position = Vector2(853.333, 120)
-node_connections = [&"action_speed", 0, &"Animation", &"output", 0, &"action_speed"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x7c3f"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_bjvpn"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_s7qer"]
-states/dodge/node = SubResource("AnimationNodeBlendTree_e7oew")
-states/dodge/position = Vector2(530, 107.333)
-transitions = ["Start", "dodge", SubResource("AnimationNodeStateMachineTransition_x7c3f"), "dodge", "End", SubResource("AnimationNodeStateMachineTransition_bjvpn")]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2ieo8"]
 animation = &"idle"
@@ -161,28 +139,37 @@ advance_condition = &"jump"
 advance_mode = 2
 advance_condition = &"landed"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_g4c7l"]
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x7c3f"]
 advance_mode = 2
 advance_condition = &"dodge"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_knn7v"]
-switch_mode = 2
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_bjvpn"]
+advance_mode = 2
+advance_condition = &"dodge"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_s7qer"]
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_g4c7l"]
+advance_mode = 2
+advance_condition = &"dodge_finish"
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_yllr7"]
-states/Dodge/node = SubResource("AnimationNodeStateMachine_s7qer")
-states/Dodge/position = Vector2(315.333, 230.667)
+states/Dash/node = SubResource("AnimationNodeAnimation_32hag")
+states/Dash/position = Vector2(304.667, 206)
 states/IdleWalkRun/node = SubResource("AnimationNodeStateMachine_e7oew")
 states/IdleWalkRun/position = Vector2(473.333, 57.3333)
 states/Jump/node = SubResource("AnimationNodeStateMachine_65viv")
-states/Jump/position = Vector2(598, 180.666)
-transitions = ["Start", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_2ieo8"), "IdleWalkRun", "Jump", SubResource("AnimationNodeStateMachineTransition_ebec5"), "Jump", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_kb6p2"), "IdleWalkRun", "Dodge", SubResource("AnimationNodeStateMachineTransition_g4c7l"), "Dodge", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_knn7v")]
+states/Jump/position = Vector2(495.333, 175.333)
+transitions = ["Start", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_2ieo8"), "IdleWalkRun", "Jump", SubResource("AnimationNodeStateMachineTransition_ebec5"), "Jump", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_kb6p2"), "IdleWalkRun", "Dash", SubResource("AnimationNodeStateMachineTransition_x7c3f"), "Jump", "Dash", SubResource("AnimationNodeStateMachineTransition_bjvpn"), "Dash", "Jump", SubResource("AnimationNodeStateMachineTransition_s7qer"), "Dash", "IdleWalkRun", SubResource("AnimationNodeStateMachineTransition_g4c7l")]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_yllr7"]
 
 [node name="Player" type="CharacterBody3D"]
 safe_margin = 0.01
 script = ExtResource("1_oul6g")
+PLAYER_TURN_SPEED = 10000.0
+CLAMP_HEAD_ROTATION = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_kqu6x")
@@ -326,9 +313,9 @@ callback_mode_process = 0
 tree_root = SubResource("AnimationNodeStateMachine_yllr7")
 anim_player = NodePath("../mannequiny/AnimationPlayer")
 parameters/conditions/dodge = false
+parameters/conditions/dodge_finish = false
 parameters/conditions/jump = false
 parameters/conditions/landed = false
-parameters/Dodge/dodge/action_speed/scale = 1.0
 parameters/IdleWalkRun/conditions/idle = false
 parameters/IdleWalkRun/conditions/move = false
 parameters/Jump/conditions/land = false

@@ -1,7 +1,7 @@
 ## Parent for weapon abilities
 class_name WeaponAbility extends AbilityBase
 
-enum WeaponType { SWORD, RIFLE, HAMMER }
+enum WeaponType { SWORD, RIFLE, HAMMER, UNARMED }
 
 @export var uses_ammo : bool = false
 

@@ -1,6 +1,14 @@
 ## "Glue" script
 extends MultiplayerSynchronizer
 
+signal basic_attack_pressed(StringName)
+signal secondary_attack_pressed(StringName)
+signal jump_pressed(StringName)
+signal dodge_pressed(StringName)
+signal ability_1_pressed(StringName)
+signal ability_2_pressed(StringName)
+signal ability_3_pressed(StringName)
+signal ability_4_pressed(StringName)
 
 @export_subgroup("Movement")
 @export var movement_speed : float = 10.0
@@ -48,10 +56,13 @@ func _ready():
 func _process(delta:float):
 	motion = Vector2(Input.get_action_strength("move_left") - Input.get_action_strength("move_right"),
 					Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward"))
+	# Controller only?
 	var camera_move = Vector2(Input.get_action_strength("view_right") - Input.get_action_strength("view_left"),
 					Input.get_action_strength("view_up") - Input.get_action_strength("view_down"))
 	var camera_speed_this_frame : float = delta * CAMERA_CONTROLLER_ROT_SPEED
-	rotate_camera(camera_move * camera_speed_this_frame)
+	
+	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		rotate_camera(camera_move * camera_speed_this_frame)
 
 func _input(event):
 	# Make mouse aiming speed resolution-independent
@@ -63,8 +74,28 @@ func _input(event):
 
 	if event is InputEventMouseMotion:
 		var camera_speed_this_frame = CAMERA_SENS
-		rotate_camera(event.relative * camera_speed_this_frame * scale_factor)
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			rotate_camera(event.relative * camera_speed_this_frame * scale_factor)
+			
+	_handle_pressed()
 		
+func _handle_pressed():
+	if Input.is_action_pressed("ability_1"):
+		emit_signal("ability_1_pressed", "ability_1")
+	if Input.is_action_pressed("ability_2"):
+		emit_signal("ability_2_pressed", "ability_2")
+	if Input.is_action_pressed("ability_3"):
+		emit_signal("ability_3_pressed", "ability_3")
+	if Input.is_action_pressed("ability_4"):
+		emit_signal("ability_4_pressed", "ability_4")
+	if Input.is_action_pressed("basic_attack"):
+		emit_signal("basic_attack_pressed", "basic_attack")
+	if Input.is_action_pressed("secondary_attack"):
+		emit_signal("secondary_attack_pressed", "secondary_attack")
+	if Input.is_action_pressed("dodge"):
+		emit_signal("dodge_pressed", "dodge")
+	if Input.is_action_pressed("jump"):
+		emit_signal("jump_pressed", "jump")
 		
 func rotate_camera(move : Vector2):
 	camera_base.rotate_y(-move.x)

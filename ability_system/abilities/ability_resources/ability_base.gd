@@ -6,11 +6,14 @@ signal ability_activated(ability : AbilityBase)
 enum AbilityType { WEAPON, SPELL, MOVEMENT }
 enum AbilityInputSlot { BASIC, SECONDARY, ONE, TWO, THREE, FOUR, DODGE, JUMP, NONE}
 
-
 @export var cost : float = 0.0
 @export var cooldown : float = 0.0
 @export var action_speed : float = 1.0
 @export var input_action : AbilityInputSlot = AbilityInputSlot.NONE
+
+# Animations
+@export_subgroup("Animation")
+@export var anim_name : String
 
 # Can have this only show by using a @tool node
 @export_subgroup("Damage")

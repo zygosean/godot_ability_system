@@ -1,8 +1,13 @@
 ## Manages abilities and input - gives startup abilities and manages ability activation
 class_name AbilitySystemComponent extends Node
 
+signal animate_ability(anim_name : String, time : float)
+signal dodge_ability_activate(is_active : bool, invuln_time : int)
+
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
+
+
 
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
@@ -21,10 +26,13 @@ func activate_ability(activate : AbilityBase):
 		return
 	activate.activate(self)
 	activate.in_action = true
+	if not activate.anim_name.is_empty():
+		emit_signal("animate_ability", activate.anim_name, activate.action_speed)
 	action_timer(activate)
 
 func _ability_activated(ability : AbilityBase):
-	print("Do something here")
+	if ability is DodgeAbility:
+		emit_signal("dodge_ability_activate", true, ability.action_speed)
 
 func add_startup_abilities():
 	abilities.assign(startup_abilities)
@@ -45,3 +53,5 @@ func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.Abil
 func action_timer(ability : AbilityBase):
 	await get_tree().create_timer(ability.action_speed).timeout
 	ability.in_action = false
+	
+	
