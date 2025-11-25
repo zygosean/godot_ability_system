@@ -17,6 +17,7 @@ var columns : int = 16
 
 var hover_item : HoverItem
 
+@onready var hover_item_scene := preload("res://inventory/inventory/widgets/hover_item/hover_item.tscn")
 @onready var slotted_item_scene := preload("res://inventory/inventory/widgets/slotted_items/slotted_item.tscn")
 @onready var grid_slot_scene := preload("res://inventory/inventory/grid_slots/grid_slot.tscn")
 
@@ -220,7 +221,7 @@ func remove_item_from_grid(item : InventoryItem, index : int):
 ## If there is not an existing hover item, instantiaates one and sets its manifest, fragments, and other variables
 func create_hover_item(item : InventoryItem):
 	if not is_instance_valid(hover_item):
-		var hover_item_scene : PackedScene = load("res://inventory/widgets/hover_item/hover_item.tscn")
+		
 		hover_item = hover_item_scene.instantiate()
 		emit_signal("hover_item_created", hover_item)
 		

@@ -10,6 +10,8 @@ signal ability_2_pressed(StringName)
 signal ability_3_pressed(StringName)
 signal ability_4_pressed(StringName)
 
+var is_moving : bool = false
+
 @export_subgroup("Movement")
 @export var movement_speed : float = 10.0
 @export var sprint_multi : float = 1.5
@@ -56,6 +58,9 @@ func _ready():
 func _process(delta:float):
 	motion = Vector2(Input.get_action_strength("move_left") - Input.get_action_strength("move_right"),
 					Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward"))
+	if motion.length() > 0.01:
+		is_moving = true
+	else: is_moving = false
 	# Controller only?
 	var camera_move = Vector2(Input.get_action_strength("view_right") - Input.get_action_strength("view_left"),
 					Input.get_action_strength("view_up") - Input.get_action_strength("view_down"))

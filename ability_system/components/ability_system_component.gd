@@ -7,11 +7,8 @@ signal dodge_ability_activate(is_active : bool, invuln_time : int)
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
 
-
-
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
-
 
 func handle_input(event):
 	for ability in abilities:

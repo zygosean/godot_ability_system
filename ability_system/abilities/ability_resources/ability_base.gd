@@ -29,6 +29,9 @@ func activate(component : AbilitySystemComponent):
 func _apply_effect(component : AbilitySystemComponent, attribute_set : AttributeSetBase):
 	pass
 		
-
 func is_on_cooldown() -> bool:
+	return false
+	
+func trigger_timer(owning_asc : AbilitySystemComponent, time : float) -> bool:
+	await owning_asc.get_tree().create_timer(time).timeout
 	return false

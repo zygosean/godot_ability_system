@@ -8,6 +8,7 @@ func activate(component : AbilitySystemComponent):
 	var asc_owner := AbilitySystemStatics.get_asc_owner(component)
 	if asc_owner == null: return
 	
+	is_dodging = true
 	if asc_owner is not CharacterBody3D: return
 	if asc_owner is Player:
 		if asc_owner.velocity.length() > 0.01:

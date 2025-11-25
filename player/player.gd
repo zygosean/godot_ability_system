@@ -6,7 +6,7 @@ signal unhighlight
 
 enum State { IDLE, RUN, JUMP, DODGE, CASTING, FALLING }
 
-const MOTION_INTERP_SPEED : float = 14.0
+const MOTION_INTERP_SPEED : float = 50.0
 const ROTATION_INTERP_SPEED : float = 10.0
 
 @export_subgroup("Movement")
@@ -148,7 +148,7 @@ func _handle_input(delta: float):
 		var h_velocity = Vector3(-target.x, 0, target.z)
 		velocity.x = h_velocity.x * movement_speed
 		velocity.z = -h_velocity.z * movement_speed
-	else:
+	elif player_input.is_moving == false:
 		velocity.x = 0
 		velocity.z = 0
 
