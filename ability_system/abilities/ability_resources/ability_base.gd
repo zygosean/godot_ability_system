@@ -9,6 +9,7 @@ enum AbilityInputSlot { BASIC, SECONDARY, ONE, TWO, THREE, FOUR, DODGE, JUMP, NO
 @export var cost : float = 0.0
 @export var cooldown : float = 0.0
 @export var action_speed : float = 1.0
+@export var action_time : float = 1.0
 @export var input_action : AbilityInputSlot = AbilityInputSlot.NONE
 
 # Animations

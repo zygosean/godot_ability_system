@@ -8,15 +8,21 @@ func activate(component : AbilitySystemComponent):
 	var asc_owner := AbilitySystemStatics.get_asc_owner(component)
 	if asc_owner == null: return
 	
-	is_dodging = true
 	if asc_owner is not CharacterBody3D: return
-	if asc_owner is Player:
-		if asc_owner.velocity.length() > 0.01:
-			asc_owner.velocity = asc_owner.velocity * dodge_impulse
-		elif asc_owner.velocity.length() < 0.01:
-			# need to get the model transform here, not the Player
-			
-			asc_owner.velocity = -asc_owner.orientation.basis.z * dodge_impulse
+	if asc_owner is not Player: return
 	
+	var player := asc_owner as Player
+	var dir : Vector3
 	
+	if player.velocity.length() > 0.01:
+		dir = player.velocity
+		dir.y = 0.0
+		dir = dir.normalized()
+	elif asc_owner.velocity.length() < 0.01:
+		dir = -asc_owner.orientation.basis.z
+		dir.y = 0.0
+		dir = dir.normalized()
+	var is_dodging : bool = true
+	var dodge_vel = dir * dodge_impulse
+	emit_signal("initiate_dodge", is_dodging, dodge_vel, dodge_time)
 	

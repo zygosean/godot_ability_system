@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://ceo0raxqkvfm3"]
+[gd_scene load_steps=53 format=3 uid="uid://ceo0raxqkvfm3"]
 
 [ext_resource type="Script" uid="uid://b8ajunmh5dmnh" path="res://player/player.gd" id="1_oul6g"]
 [ext_resource type="PackedScene" uid="uid://c4arhh6me17h0" path="res://assets/player/basic/mannequiny-0.3.0.glb" id="2_8t03j"]
@@ -12,6 +12,10 @@
 [ext_resource type="Script" uid="uid://dgqsd2n838pwa" path="res://ability_system/attributes/attribute_resources/vital/vital_attribute.gd" id="7_rgyib"]
 [ext_resource type="Curve" uid="uid://d37ut8uh5cqra" path="res://assets/player/basic/animation/xfade_curve_basic.tres" id="11_ebec5"]
 [ext_resource type="Script" uid="uid://bfokn7sn6fi0b" path="res://player/player_input.gd" id="12_ebec5"]
+[ext_resource type="Script" uid="uid://b62kdxgers4ji" path="res://state_machine/state_machine.gd" id="13_yllr7"]
+[ext_resource type="Script" uid="uid://2p87gtdmoogm" path="res://state_machine/states/locomotion_state.gd" id="14_kb6p2"]
+[ext_resource type="Script" uid="uid://ws3d541xiyad" path="res://state_machine/states/state.gd" id="15_32hag"]
+[ext_resource type="Script" uid="uid://bluo22uxyaygh" path="res://state_machine/states/falling_state.gd" id="16_tqiix"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
 
@@ -21,6 +25,7 @@ uses_ammo = false
 cost = 0.0
 cooldown = 0.0
 action_speed = 1.0
+action_time = 1.0
 input_action = 2
 anim_name = ""
 min_damage = 0.0
@@ -34,6 +39,7 @@ does_use_gravity = true
 cost = 0.0
 cooldown = 0.0
 action_speed = 0.25
+action_time = 1.0
 input_action = 7
 anim_name = ""
 min_damage = 0.0
@@ -47,6 +53,7 @@ invuln_time = 0.0
 cost = 0.0
 cooldown = 0.0
 action_speed = 1.0
+action_time = 1.0
 input_action = 6
 anim_name = "dash"
 min_damage = 0.0
@@ -180,9 +187,29 @@ transitions = ["Start", "IdleWalkRun", SubResource("AnimationNodeStateMachineTra
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_yllr7"]
 
+[sub_resource type="Resource" id="Resource_wodsf"]
+script = ExtResource("14_kb6p2")
+accel_speed = 50.0
+rotation_speed = 10.0
+state = 0
+metadata/_custom_type_script = "uid://2p87gtdmoogm"
+
+[sub_resource type="Resource" id="Resource_e7oew"]
+script = ExtResource("16_tqiix")
+state = 1
+metadata/_custom_type_script = "uid://bluo22uxyaygh"
+
+[sub_resource type="Resource" id="Resource_c35mf"]
+script = ExtResource("14_kb6p2")
+accel_speed = 50.0
+rotation_speed = 10.0
+state = 0
+metadata/_custom_type_script = "uid://2p87gtdmoogm"
+
 [node name="Player" type="CharacterBody3D"]
 safe_margin = 0.01
 script = ExtResource("1_oul6g")
+movement_speed = 10.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_kqu6x")
@@ -336,8 +363,15 @@ parameters/Jump/conditions/land = false
 [node name="InputSynchronizer" type="MultiplayerSynchronizer" parent="." node_paths=PackedStringArray("camera_base", "camera_rot", "camera_camera")]
 replication_config = SubResource("SceneReplicationConfig_yllr7")
 script = ExtResource("12_ebec5")
+movement_speed = 50.0
 camera_base = NodePath("../CameraBase")
 camera_rot = NodePath("../CameraBase/CameraRot")
 camera_camera = NodePath("../CameraBase/CameraRot/SpringArm3D/Camera3D")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("13_yllr7")
+initial_state = SubResource("Resource_wodsf")
+state_list = Array[ExtResource("15_32hag")]([SubResource("Resource_e7oew"), SubResource("Resource_c35mf")])
+metadata/_custom_type_script = "uid://b62kdxgers4ji"
 
 [editable path="mannequiny"]
