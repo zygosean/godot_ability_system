@@ -31,6 +31,8 @@ func clear_horizontal_velocity():
 func apply_gravity():
 	velocity += gravity
 
+func disable_gravity():
+	velocity.y = 0
 	
 func commit_movement():
 	set_velocity(velocity)

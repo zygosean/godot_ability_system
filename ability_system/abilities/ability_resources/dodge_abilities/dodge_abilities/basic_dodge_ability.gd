@@ -1,7 +1,7 @@
 ## Basic dodge - impulse based on movement direction
 class_name BasicDodgeAbility extends DodgeAbility
 
-@export var dodge_impulse : float = 30
+@export var dodge_impulse : float = 100
 
 func activate(component : AbilitySystemComponent):
 	super.activate(component)
@@ -12,17 +12,27 @@ func activate(component : AbilitySystemComponent):
 	if asc_owner is not Player: return
 	
 	var player := asc_owner as Player
-	var dir : Vector3
+	var dir : Vector3 = asc_owner.velocity
 	
-	if player.velocity.length() > 0.01:
-		dir = player.velocity
-		dir.y = 0.0
-		dir = dir.normalized()
-	elif asc_owner.velocity.length() < 0.01:
-		dir = -asc_owner.orientation.basis.z
-		dir.y = 0.0
-		dir = dir.normalized()
-	var is_dodging : bool = true
-	var dodge_vel = dir * dodge_impulse
-	emit_signal("initiate_dodge", is_dodging, dodge_vel, dodge_time)
+	if dir.length() < 0.1:
+		asc_owner.velocity = asc_owner.get_movement_basis().z * dodge_impulse
+	else:
+		asc_owner.velocity = asc_owner.velocity * dodge_impulse
+	emit_signal("ability_activated", self, {"pause_movement" : dodge_time})
+	await asc_owner.get_tree().create_timer(dodge_time).timeout
+	asc_owner.velocity = dir
+	return
+	#
+	#
+	#if player.velocity.length() > 0.01:
+		#dir = player.velocity
+		#dir.y = 0.0
+		#dir = dir.normalized()
+	#elif asc_owner.velocity.length() < 0.01:
+		#dir = -asc_owner.orientation.basis.z
+		#dir.y = 0.0
+		#dir = dir.normalized()
+	#var is_dodging : bool = true
+	#var dodge_vel = dir * dodge_impulse
+	#emit_signal("initiate_dodge", is_dodging, dodge_vel, dodge_time)
 	

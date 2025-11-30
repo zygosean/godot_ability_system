@@ -2,7 +2,7 @@ class_name State extends Resource
 
 signal request_state_change(next : State, msg)
 
-enum StateID { LOCOMOTION, FALLING, DODGING, CASTING, SENTINAL }
+enum StateID { LOCOMOTION, FALLING, DODGING, CASTING, FREEMOVE, SENTINAL }
 
 @export var state : StateID
 

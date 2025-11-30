@@ -49,15 +49,15 @@ metadata/_custom_type_script = "uid://dhqmbc5bt6kgy"
 [sub_resource type="Resource" id="Resource_2ieo8"]
 script = ExtResource("7_hg6s5")
 dodge_impulse = 100.0
-dodge_time = 0.0
-cost = 0.0
-cooldown = 0.0
-action_speed = 1.0
-action_time = 1.0
+invuln_time = null
+cost = null
+cooldown = null
+action_speed = null
+action_time = null
 input_action = 6
 anim_name = "dash"
-min_damage = 0.0
-max_damage = 0.0
+min_damage = null
+max_damage = null
 metadata/_custom_type_script = "uid://cod43lcnvd1va"
 
 [sub_resource type="Resource" id="Resource_hg6s5"]

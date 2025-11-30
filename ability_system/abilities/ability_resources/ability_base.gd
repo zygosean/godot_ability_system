@@ -1,6 +1,6 @@
 class_name AbilityBase extends Resource
 
-signal ability_activated(ability : AbilityBase)
+signal ability_activated(ability : AbilityBase, msg : Dictionary)
 
 # enums for requirements?
 enum AbilityType { WEAPON, SPELL, MOVEMENT }
@@ -25,7 +25,7 @@ var in_action : bool = false
 
 ## Child resource to contain activation logic
 func activate(component : AbilitySystemComponent):
-	emit_signal("ability_activated", self)
+	emit_signal("ability_activated", self, {})
 	
 func _apply_effect(component : AbilitySystemComponent, attribute_set : AttributeSetBase):
 	pass

@@ -112,7 +112,6 @@ func _connect_signals():
 	inventory_component.inv_hover_item_created.connect(hud.add_hover_item)
 	
 	ability_system_component.animate_ability.connect(animate_one_shots)
-	ability_system_component.change_owner_state.connect(change_move_state)
 	
 	_connect_ability_input_signals()
 	

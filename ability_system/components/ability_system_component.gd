@@ -2,8 +2,7 @@
 class_name AbilitySystemComponent extends Node
 
 signal animate_ability(anim_name : String, time : float)
-signal dodge_ability_activate(is_active : bool, invuln_time : int)
-signal change_owner_state(state : Player.MoveState)
+signal override_locomotion(duration : float)
 
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
@@ -18,12 +17,6 @@ func handle_input(event):
 		if input_found == ability.input_action:
 			activate_ability(ability)
 			
-# We don't want to change state via child - we want the "State Machine" to determine state based on 
-# the parameters provided by children.
-func handle_dodge_ability(success : bool, dodge_vel : Vector3, dodge_time : float):
-	emit_signal("change_owner_state", Player.MoveState.DODGE)
-	await get_tree().create_timer(dodge_time).timeout
-	emit_signal("change_owner_state", Player.MoveState.LOCOMOTION)
 
 func activate_ability(activate : AbilityBase):
 	if activate.is_on_cooldown() or activate.in_action == true:
@@ -36,15 +29,12 @@ func activate_ability(activate : AbilityBase):
 	action_timer(activate)
 
 func _ability_activated(ability : AbilityBase):
-	if ability is DodgeAbility:
-		emit_signal("dodge_ability_activate", true, ability.action_speed)
+	pass
 
 func add_startup_abilities():
 	abilities.assign(startup_abilities)
 	for ability in abilities:
 		ability.connect("ability_activated", _ability_activated)
-		if ability is DodgeAbility:
-			ability.initiate_dodge.connect(handle_dodge_ability)
 	
 func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.AbilityInputSlot):
 	var found_ability : AbilityBase = null
