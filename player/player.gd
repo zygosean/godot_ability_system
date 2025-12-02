@@ -15,6 +15,9 @@ const MIN_AIRBORNE_TIME : float  = 0.1
 @export var sprint_multi : float = 1.5
 @export var move_state : MoveState
 
+@export_subgroup("AbilitySystem")
+@export var ability_actor_info : AbiliyActorInfo
+
 @export_subgroup("Actions")
 @export var INTERACT : String = "interact"
 @export var DEBUG : String = "debug"
@@ -103,7 +106,7 @@ func _physics_process(delta: float) -> void:
 	#state_machine.dispatch_input(input_data)
 	state_machine.tick_physics(delta)
 	
-	_handle_global_input(delta)
+	#_handle_global_input(delta)
 	animate("state", delta)
 	
 func _connect_signals():
@@ -116,14 +119,18 @@ func _connect_signals():
 	_connect_ability_input_signals()
 	
 func _connect_ability_input_signals():
-	player_input.ability_1_pressed.connect(ability_system_component.handle_input)
-	player_input.ability_2_pressed.connect(ability_system_component.handle_input)
-	player_input.ability_3_pressed.connect(ability_system_component.handle_input)
-	player_input.ability_4_pressed.connect(ability_system_component.handle_input)
-	player_input.basic_attack_pressed.connect(ability_system_component.handle_input)
-	player_input.secondary_attack_pressed.connect(ability_system_component.handle_input)
-	player_input.dodge_pressed.connect(ability_system_component.handle_input)
-	player_input.jump_pressed.connect(ability_system_component.handle_input)
+	#player_input.ability_1_pressed.connect(ability_system_component.handle_input)
+	#player_input.ability_2_pressed.connect(ability_system_component.handle_input)
+	#player_input.ability_3_pressed.connect(ability_system_component.handle_input)
+	#player_input.ability_4_pressed.connect(ability_system_component.handle_input)
+	#player_input.basic_attack_pressed.connect(ability_system_component.handle_input)
+	#player_input.secondary_attack_pressed.connect(ability_system_component.handle_input)
+	#player_input.dodge_pressed.connect(ability_system_component.handle_input)
+	#player_input.jump_pressed.connect(ability_system_component.handle_input)
+	
+	player_input.ability_input_pressed.connect(ability_system_component.handle_input)
+	
+	player_input.general_input_pressed.connect(_handle_general_input)
 	
 func animate(animation : String, delta:= 0.0):
 	anim_tree.set("parameters/IdleWalkRun/conditions/move", is_on_floor() and velocity.length() > 0)
@@ -137,101 +144,27 @@ func change_move_state(state : MoveState):
 func animate_one_shots(animation : String, time : float):
 	anim_tree.set("parameters/Dodge/dodge/action_speed/scale", time)
 	anim_tree.set("parameters/conditions/dodge", animation == "dash")
-	
-func _handle_move_state_input(delta: float):
-	motion = motion.lerp(player_input.motion, MOTION_INTERP_SPEED * delta)
-	if motion.length() > 0.1:
-		move_state = MoveState.LOCOMOTION
-	_handle_global_input(delta)
-	match move_state:
-		MoveState.LOCOMOTION:
-			_handle_locomotion_input(delta)
-		MoveState.DODGE:
-			pass
-		MoveState.FALLING:
-			_handle_falling(delta)
-		MoveState.CASTING:
-			pass
-			
-func _handle_global_input(delta: float):
-	if Input.is_action_just_pressed("debug"):
-		for ability in ability_system_component.abilities:
-			if ability is DodgeAbility:
-				ability.get_signal_connection_list("initiate_dodge")
-		
-	if Input.is_action_just_pressed("inventory"):
-		inventory_component.toggle_inventory()
-		
-	if Input.is_action_just_pressed("escape"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			
-	if Input.is_action_just_pressed("interact"):
-		interact()
-	
-func _handle_locomotion_input(delta: float):
-	#motion = motion.lerp(player_input.motion, MOTION_INTERP_SPEED * delta)
-	
-	var camera_basis : Basis = player_input.get_camera_rotation_basis()
-	var camera_z := camera_basis.z
-	var camera_x := camera_basis.x
-	
-	camera_z.y = 0
-	camera_z = camera_z.normalized()
-	camera_x.y = 0
-	camera_x = camera_x.normalized()
-	
-	var target : Vector3 = camera_x * motion.x + camera_z * motion.y
-	if target.length() > 0.1:
-		var q_from = orientation.basis.get_rotation_quaternion()
-		var q_to = Transform3D().looking_at(target, Vector3.UP).basis.get_rotation_quaternion()
-		orientation.basis = Basis(q_from.slerp(q_to, delta * MOTION_INTERP_SPEED))
 
-	## Root motion - unused at the moment
-	root_motion = Transform3D(anim_tree.get_root_motion_rotation(), anim_tree.get_root_motion_position())
-	orientation *= root_motion
-	
-	## Better way? This works
-	if motion.length() > 0.1:
-		var h_velocity = Vector3(-target.x, 0, target.z)
-		velocity.x = h_velocity.x * movement_speed
-		velocity.z = -h_velocity.z * movement_speed
-	elif player_input.is_moving == false:
-		velocity.x = 0
-		velocity.z = 0
-
-	if is_on_floor():
-		state = MoveState.LOCOMOTION
-		move_state = MoveState.LOCOMOTION
-		
-	if !is_on_floor() and gravity_toggle:
-		velocity += gravity
-		state = MoveState.FALLING
-		move_state = MoveState.FALLING
-	
-	set_velocity(velocity)
-	set_up_direction(Vector3.UP)
-	move_and_slide()
-	
-	orientation.origin = Vector3()
-	orientation = orientation.orthonormalized()
-	
-	player_model.global_transform.basis = orientation.basis
-		
-	_handle_global_input(delta)
-	
-func _handle_falling(delta : float):
-	if is_on_floor():
-		move_state = MoveState.LOCOMOTION
-	if !is_on_floor() and gravity_toggle:
-		velocity += gravity
-		state = MoveState.FALLING
-		move_state = MoveState.FALLING
-	set_velocity(velocity)
-	set_up_direction(Vector3.UP)
-	move_and_slide()
+func _handle_general_input(event):
+	match event:
+		"general_inventory":
+			inventory_component.toggle_inventory()
+	#if Input.is_action_just_pressed("debug"):
+		#pass
+	#
+	#if Input.is_action_just_pressed("general_inventory"):
+		#inventory_component.toggle_inventory()
+	#if Input.is_action_just_pressed("inventory"):
+		#inventory_component.toggle_inventory()
+		#
+	#if Input.is_action_just_pressed("escape"):
+		#if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			#Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		#elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+			#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			#
+	#if Input.is_action_just_pressed("interact"):
+		#interact()
 	
 		
 func interact():
@@ -258,7 +191,7 @@ func _highlight_item():
 		for fragment in this_target.item_component.fragments:
 			if fragment is HighlightFragment:
 				fragment.highlight()
-				var interact_actions = InputMap.action_get_events("interact")
+				var interact_actions = InputMap.action_get_events("general_interact")
 				var interact_button : String = interact_actions[0].as_text().trim_suffix(" (Physical)")
 				hud.set_display_message("Press '" + interact_button + "' to pick up Item", true)
 				

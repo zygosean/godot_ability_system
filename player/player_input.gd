@@ -1,6 +1,12 @@
 ## "Glue" script
 extends MultiplayerSynchronizer
 
+# general input
+signal general_input_pressed(general_input : StringName)
+
+# ability system input
+signal ability_input_pressed(ability_input : StringName)
+
 signal basic_attack_pressed(StringName)
 signal secondary_attack_pressed(StringName)
 signal jump_pressed(StringName)
@@ -44,6 +50,9 @@ var is_moving : bool = false
 	set(value):
 		player_id = value
 		$InputSynchronizer.set_multiplayer_authority(value)
+		
+var general_actions : Array[StringName]
+var ability_actions : Array[StringName]
 
 func _ready():
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
@@ -51,8 +60,14 @@ func _ready():
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
 		set_process(false)
-		set_process_input(false)
+		set_process_input(false) 
 		colour_rect.hide()
+		
+	for action in InputMap.get_actions():
+		if action.begins_with("general_"):
+			general_actions.append(action)
+		if action.begins_with("ability"):
+			ability_actions.append(action)
 		
 
 func _process(delta:float):
@@ -81,12 +96,29 @@ func _input(event):
 		var camera_speed_this_frame = CAMERA_SENS
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			rotate_camera(event.relative * camera_speed_this_frame * scale_factor)
+	# check event against input map?
+
+	_handle_ability_pressed()
+	
+	var event_string = event.as_text() + " (Physical)"
+	if event.is_action_type():
+		print(ability_actions, true)
+	else: print(event_string, " false")
+	
 			
-	_handle_pressed()
+func _handle_ability_pressed():
+	for action in ability_actions:
+		if Input.is_action_pressed(action):
+			emit_signal("ability_input_pressed", action)
+
+func _handle_general_pressed(event : StringName):
+	for action in general_actions:
+		if Input.is_action_just_pressed(action):
+			emit_signal("general_input_pressed", action)
 		
-func _handle_pressed():
+func _handle_pressed(event : StringName ):
 	if Input.is_action_pressed("ability_1"):
-		emit_signal("ability_1_pressed", "ability_1")
+		emit_signal("ability_input_pressed", "ability_1")
 	if Input.is_action_pressed("ability_2"):
 		emit_signal("ability_2_pressed", "ability_2")
 	if Input.is_action_pressed("ability_3"):
@@ -101,6 +133,8 @@ func _handle_pressed():
 		emit_signal("dodge_pressed", "dodge")
 	if Input.is_action_pressed("jump"):
 		emit_signal("jump_pressed", "jump")
+	if Input.is_action_pressed("inventory"):
+		emit_signal("general_input_pressed", &"inventory")
 		
 func rotate_camera(move : Vector2):
 	camera_base.rotate_y(-move.x)

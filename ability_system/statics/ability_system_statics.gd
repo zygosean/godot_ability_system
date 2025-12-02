@@ -37,3 +37,7 @@ static func get_owner_anim_player(owner : Node3D) -> AnimationPlayer:
 		if child is AnimationPlayer:
 			return child
 	return null
+
+func for_each_ability(abilities : Array[AbilityBase], callable : Callable):
+	for ability in abilities:
+		callable.call(ability)

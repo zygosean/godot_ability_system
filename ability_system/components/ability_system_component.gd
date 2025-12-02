@@ -11,6 +11,7 @@ var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
 
 func handle_input(event):
+	print(event)
 	for ability in abilities:
 		var input_found : AbilityBase.AbilityInputSlot = AbilitySystemStatics.get_input_from_string(event)
 		if input_found == AbilityBase.AbilityInputSlot.NONE: return
@@ -48,5 +49,4 @@ func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.Abil
 func action_timer(ability : AbilityBase):
 	await get_tree().create_timer(ability.action_speed).timeout
 	ability.in_action = false
-	
 	
