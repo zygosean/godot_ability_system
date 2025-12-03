@@ -25,7 +25,11 @@ var owning_object
 # We want to decouple the UI elements (Spatial, Grid, etc) from the component in order to utilize the logic
 func _ready():
 	pass
-	
+
+func handle_input(input : StringName):
+	match input:
+		&"inventory_toggle":
+			toggle_inventory()
 	
 func set_inventory_menu():
 	inventory_menu = inventory_menu_scene.instantiate()

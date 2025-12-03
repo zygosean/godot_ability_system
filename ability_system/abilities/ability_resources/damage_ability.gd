@@ -1,0 +1,1 @@
+class_name DamageAbility extends AbilityBase

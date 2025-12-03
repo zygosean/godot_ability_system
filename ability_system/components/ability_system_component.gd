@@ -10,13 +10,14 @@ signal override_locomotion(duration : float)
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
 
-func handle_input(event):
-	print(event)
+func handle_input(event : StringName):
+	
 	for ability in abilities:
 		var input_found : AbilityBase.AbilityInputSlot = AbilitySystemStatics.get_input_from_string(event)
 		if input_found == AbilityBase.AbilityInputSlot.NONE: return
 		if input_found == ability.input_action:
 			activate_ability(ability)
+			print(ability)
 			
 
 func activate_ability(activate : AbilityBase):

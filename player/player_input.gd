@@ -7,14 +7,12 @@ signal general_input_pressed(general_input : StringName)
 # ability system input
 signal ability_input_pressed(ability_input : StringName)
 
-signal basic_attack_pressed(StringName)
-signal secondary_attack_pressed(StringName)
-signal jump_pressed(StringName)
-signal dodge_pressed(StringName)
-signal ability_1_pressed(StringName)
-signal ability_2_pressed(StringName)
-signal ability_3_pressed(StringName)
-signal ability_4_pressed(StringName)
+# inventory component input
+signal inventory_input_pressed(inventory_input : StringName)
+
+# signal any input pressed to decouple types - sort the types in the 'owning' class
+signal input_pressed(input : StringName)
+signal input_released(input : StringName)
 
 var is_moving : bool = false
 
@@ -53,6 +51,7 @@ var is_moving : bool = false
 		
 var general_actions : Array[StringName]
 var ability_actions : Array[StringName]
+var inventory_actions : Array[StringName]
 
 func _ready():
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
@@ -62,14 +61,16 @@ func _ready():
 		set_process(false)
 		set_process_input(false) 
 		colour_rect.hide()
-		
-	for action in InputMap.get_actions():
-		if action.begins_with("general_"):
-			general_actions.append(action)
-		if action.begins_with("ability"):
-			ability_actions.append(action)
-		
-
+		#
+	#for action in InputMap.get_actions():
+		#if action.begins_with("general"):
+			#general_actions.append(action)
+		#if action.begins_with("ability"):
+			#ability_actions.append(action)
+		#if action.begins_with("inventory"):
+			#inventory_actions.append(action)
+	
+	
 func _process(delta:float):
 	motion = Vector2(Input.get_action_strength("move_left") - Input.get_action_strength("move_right"),
 					Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward"))
@@ -83,6 +84,23 @@ func _process(delta:float):
 	
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_camera(camera_move * camera_speed_this_frame)
+	
+	for action in InputMap.get_actions():
+		if Input.is_action_just_pressed(action):
+			emit_signal("input_pressed", action)
+		if Input.is_action_just_released(action):
+			emit_signal("input_released", action)
+	## Figure out how to handle "hold"
+	#for action in ability_actions:
+		#if Input.is_action_pressed(action):
+			#emit_signal("ability_input_pressed", action)
+	#for action in general_actions:
+		#if Input.is_action_just_pressed(action):
+			#emit_signal("general_input_pressed", action)
+	#for action in inventory_actions:
+		#if Input.is_action_just_pressed(action):
+			#emit_signal("inventory_input_pressed", action)
+	
 
 func _input(event):
 	# Make mouse aiming speed resolution-independent
@@ -97,13 +115,13 @@ func _input(event):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			rotate_camera(event.relative * camera_speed_this_frame * scale_factor)
 	# check event against input map?
+	
+	
 
-	_handle_ability_pressed()
+	#_handle_ability_pressed()
 	
 	var event_string = event.as_text() + " (Physical)"
-	if event.is_action_type():
-		print(ability_actions, true)
-	else: print(event_string, " false")
+
 	
 			
 func _handle_ability_pressed():
@@ -116,25 +134,7 @@ func _handle_general_pressed(event : StringName):
 		if Input.is_action_just_pressed(action):
 			emit_signal("general_input_pressed", action)
 		
-func _handle_pressed(event : StringName ):
-	if Input.is_action_pressed("ability_1"):
-		emit_signal("ability_input_pressed", "ability_1")
-	if Input.is_action_pressed("ability_2"):
-		emit_signal("ability_2_pressed", "ability_2")
-	if Input.is_action_pressed("ability_3"):
-		emit_signal("ability_3_pressed", "ability_3")
-	if Input.is_action_pressed("ability_4"):
-		emit_signal("ability_4_pressed", "ability_4")
-	if Input.is_action_pressed("basic_attack"):
-		emit_signal("basic_attack_pressed", "basic_attack")
-	if Input.is_action_pressed("secondary_attack"):
-		emit_signal("secondary_attack_pressed", "secondary_attack")
-	if Input.is_action_pressed("dodge"):
-		emit_signal("dodge_pressed", "dodge")
-	if Input.is_action_pressed("jump"):
-		emit_signal("jump_pressed", "jump")
-	if Input.is_action_pressed("inventory"):
-		emit_signal("general_input_pressed", &"inventory")
+	
 		
 func rotate_camera(move : Vector2):
 	camera_base.rotate_y(-move.x)

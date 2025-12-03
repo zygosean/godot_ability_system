@@ -36,8 +36,6 @@ var root_motion : Transform3D
 var last_target
 var this_target
 
-
-
 var input : String
 var gravity_test : float = 24.0
 var hud : HUD
@@ -46,6 +44,10 @@ var gravity_toggle : bool = true
 
 #Debugging in process
 var debug_timer_exists : bool = false
+
+var ability_inputs : Array[StringName]
+var inventory_inputs : Array[StringName]
+var general_inputs : Array[StringName]
 
 @onready var player_input := $InputSynchronizer
 
@@ -69,6 +71,7 @@ var state : MoveState = MoveState.LOCOMOTION
 
 func _ready():
 	super()
+	_populate_input_arrays()
 	orientation = player_model.global_transform
 	orientation.origin = Vector3()
 	
@@ -93,6 +96,15 @@ func _process(delta: float):
 	
 	_debug_timer()
 	
+func _populate_input_arrays():
+	for action in InputMap.get_actions():
+		if action.begins_with("ability"):
+			ability_inputs.append(action)
+		if action.begins_with("inventory"):
+			inventory_inputs.append(action)
+		if action.begins_with("general"):
+			general_inputs.append(action)
+	
 func get_move_input() -> Vector2:
 	motion = motion.lerp(player_input.motion, 50.0 * get_physics_process_delta_time())
 	return motion
@@ -110,27 +122,19 @@ func _physics_process(delta: float) -> void:
 	animate("state", delta)
 	
 func _connect_signals():
+	_connect_player_input_signals()
 	inventory_component.on_no_room_in_inventory.connect(hud.show_interact_message.bind("NO ROOM IN INVENTORY"))
 	inventory_component.connect_add_item()
 	inventory_component.inv_hover_item_created.connect(hud.add_hover_item)
 	
 	ability_system_component.animate_ability.connect(animate_one_shots)
 	
-	_connect_ability_input_signals()
+func _connect_player_input_signals():
 	
-func _connect_ability_input_signals():
-	#player_input.ability_1_pressed.connect(ability_system_component.handle_input)
-	#player_input.ability_2_pressed.connect(ability_system_component.handle_input)
-	#player_input.ability_3_pressed.connect(ability_system_component.handle_input)
-	#player_input.ability_4_pressed.connect(ability_system_component.handle_input)
-	#player_input.basic_attack_pressed.connect(ability_system_component.handle_input)
-	#player_input.secondary_attack_pressed.connect(ability_system_component.handle_input)
-	#player_input.dodge_pressed.connect(ability_system_component.handle_input)
-	#player_input.jump_pressed.connect(ability_system_component.handle_input)
-	
-	player_input.ability_input_pressed.connect(ability_system_component.handle_input)
-	
-	player_input.general_input_pressed.connect(_handle_general_input)
+	#player_input.ability_input_pressed.connect(ability_system_component.handle_input)
+	#player_input.general_input_pressed.connect(_handle_general_input)
+	#player_input.inventory_input_pressed.connect(inventory_component.handle_input)
+	player_input.input_pressed.connect(parse_input_action)
 	
 func animate(animation : String, delta:= 0.0):
 	anim_tree.set("parameters/IdleWalkRun/conditions/move", is_on_floor() and velocity.length() > 0)
@@ -144,34 +148,37 @@ func change_move_state(state : MoveState):
 func animate_one_shots(animation : String, time : float):
 	anim_tree.set("parameters/Dodge/dodge/action_speed/scale", time)
 	anim_tree.set("parameters/conditions/dodge", animation == "dash")
+	
+func parse_input_action(action : StringName):
+	var component : Node
+	if action.begins_with("ability"):
+		component = ability_system_component
+	if action.begins_with("inventory"):
+		component = inventory_component
+	if action.begins_with("general"):
+		_handle_general_input(action)
+	if component == null: return
+	component.handle_input(action)
 
-func _handle_general_input(event):
+func _handle_general_input(event : StringName):
 	match event:
-		"general_inventory":
-			inventory_component.toggle_inventory()
-	#if Input.is_action_just_pressed("debug"):
-		#pass
-	#
-	#if Input.is_action_just_pressed("general_inventory"):
-		#inventory_component.toggle_inventory()
-	#if Input.is_action_just_pressed("inventory"):
-		#inventory_component.toggle_inventory()
-		#
-	#if Input.is_action_just_pressed("escape"):
-		#if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			#Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		#elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
-			#Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			#
-	#if Input.is_action_just_pressed("interact"):
-		#interact()
+		"general_escape":
+			if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			elif Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
+				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+				
+		"general_debug":
+			pass
+				
+		"general_interact":
+			interact()
 	
 		
 func interact():
 	if is_instance_valid(this_target) and InventoryStatics.has_item_component(this_target):
 		inventory_component.try_add_item(this_target.item_component)
 		this_target.item_component.on_picked_up()
-		print("Inventory item list: ", inventory_component.inventory_list)
 
 func _trace_for_item():
 	var is_targeting_item : bool

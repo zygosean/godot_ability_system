@@ -4,9 +4,9 @@ enum FragmentTags{ NAME, AMMO, ICON, ANIMATION }
 
 static func get_input_from_string(action : StringName) -> AbilityBase.AbilityInputSlot:
 	match action:
-		"basic_attack":
+		"ability_basic_attack":
 			return AbilityBase.AbilityInputSlot.BASIC
-		"secondary_attack":
+		"ability_secondary_attack":
 			return AbilityBase.AbilityInputSlot.SECONDARY
 		"ability_1":
 			return AbilityBase.AbilityInputSlot.ONE
@@ -16,9 +16,9 @@ static func get_input_from_string(action : StringName) -> AbilityBase.AbilityInp
 			return AbilityBase.AbilityInputSlot.THREE
 		"ability_4":
 			return AbilityBase.AbilityInputSlot.FOUR
-		"dodge":
+		"ability_dodge":
 			return AbilityBase.AbilityInputSlot.DODGE
-		"jump":
+		"ability_jump":
 			return AbilityBase.AbilityInputSlot.JUMP
 	return AbilityBase.AbilityInputSlot.NONE
 
