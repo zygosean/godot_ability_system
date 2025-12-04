@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=3 uid="uid://ceo0raxqkvfm3"]
+[gd_scene load_steps=59 format=3 uid="uid://ceo0raxqkvfm3"]
 
 [ext_resource type="Script" uid="uid://b8ajunmh5dmnh" path="res://player/player.gd" id="1_oul6g"]
 [ext_resource type="PackedScene" uid="uid://c4arhh6me17h0" path="res://assets/player/basic/mannequiny-0.3.0.glb" id="2_8t03j"]
@@ -9,11 +9,16 @@
 [ext_resource type="Script" uid="uid://dhqmbc5bt6kgy" path="res://ability_system/abilities/ability_resources/aerial_abilities/jump_abilities/jump_ability.gd" id="6_rgyib"]
 [ext_resource type="Script" uid="uid://cod43lcnvd1va" path="res://ability_system/abilities/ability_resources/dodge_abilities/dodge_abilities/basic_dodge_ability.gd" id="7_hg6s5"]
 [ext_resource type="Script" uid="uid://dgqsd2n838pwa" path="res://ability_system/attributes/attribute_resources/vital/vital_attribute.gd" id="7_rgyib"]
+[ext_resource type="Script" uid="uid://b1x0fgtw3dpvt" path="res://ability_system/abilities/effects/damage_effect_params.gd" id="8_65viv"]
+[ext_resource type="Script" uid="uid://dfc1wjxmnjqc" path="res://ability_system/abilities/ability_resources/spell_abilities/fire_abilities/fireball/fireball_ability.gd" id="8_tqiix"]
+[ext_resource type="PackedScene" uid="uid://brg01ejktnikw" path="res://test_proj.tscn" id="9_bjvpn"]
+[ext_resource type="Script" uid="uid://b4g23l1jr6ufh" path="res://ability_system/abilities/effects/projectile_effect_params.gd" id="9_x7c3f"]
 [ext_resource type="Curve" uid="uid://d37ut8uh5cqra" path="res://assets/player/basic/animation/xfade_curve_basic.tres" id="11_ebec5"]
 [ext_resource type="Script" uid="uid://bfokn7sn6fi0b" path="res://player/player_input.gd" id="12_ebec5"]
 [ext_resource type="Script" uid="uid://b62kdxgers4ji" path="res://state_machine/state_machine.gd" id="13_yllr7"]
 [ext_resource type="Script" uid="uid://2p87gtdmoogm" path="res://state_machine/states/locomotion_state.gd" id="14_kb6p2"]
 [ext_resource type="Script" uid="uid://ws3d541xiyad" path="res://state_machine/states/state.gd" id="15_32hag"]
+[ext_resource type="Texture2D" uid="uid://bxm4w5eaejue4" path="res://assets/crosshair.png" id="16_32hag"]
 [ext_resource type="Script" uid="uid://bluo22uxyaygh" path="res://state_machine/states/falling_state.gd" id="16_tqiix"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
@@ -45,6 +50,40 @@ anim_name = "dash"
 min_damage = 0.0
 max_damage = 0.0
 metadata/_custom_type_script = "uid://cod43lcnvd1va"
+
+[sub_resource type="Resource" id="Resource_bjvpn"]
+script = ExtResource("8_65viv")
+base_damage = 0.0
+damage_type = &""
+is_radial_damage = false
+death_impulse_mag = 0.0
+death_impulse_vec = Vector3(0, 0, 0)
+ability_level = 1
+metadata/_custom_type_script = "uid://b1x0fgtw3dpvt"
+
+[sub_resource type="Resource" id="Resource_x7c3f"]
+script = ExtResource("9_x7c3f")
+projectile = ExtResource("9_bjvpn")
+initial_speed = 10.0
+max_speed = 10.0
+gravity_scale = 1.0
+acceleration = 0.0
+ability_level = 1
+metadata/_custom_type_script = "uid://b4g23l1jr6ufh"
+
+[sub_resource type="Resource" id="Resource_65viv"]
+script = ExtResource("8_tqiix")
+projectile_params = SubResource("Resource_x7c3f")
+damage_params = SubResource("Resource_bjvpn")
+cost = 0.0
+cooldown = 0.0
+action_speed = 1.0
+action_time = 1.0
+input_action = 2
+anim_name = ""
+min_damage = 0.0
+max_damage = 0.0
+metadata/_custom_type_script = "uid://dfc1wjxmnjqc"
 
 [sub_resource type="Resource" id="Resource_hg6s5"]
 script = ExtResource("7_rgyib")
@@ -203,6 +242,109 @@ shape = SubResource("CapsuleShape3D_kqu6x")
 [node name="mannequiny" parent="." instance=ExtResource("2_8t03j")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -0.969354, 0.30193)
 
+[node name="Skeleton3D" parent="mannequiny" index="0"]
+bones/1/position = Vector3(-0.00730733, 0.967564, 0.252371)
+bones/1/rotation = Quaternion(0.130706, 0.14469, -0.0101098, 0.980754)
+bones/2/rotation = Quaternion(0.752516, 0.1001, 0.650668, 0.0181651)
+bones/2/scale = Vector3(0.999998, 1.02839, 1)
+bones/3/position = Vector3(8.52556e-07, 0.389355, -9.82567e-07)
+bones/3/rotation = Quaternion(-3.89395e-05, 5.43673e-05, 0.00256851, 0.999997)
+bones/3/scale = Vector3(0.999999, 1, 1)
+bones/4/rotation = Quaternion(0.28143, 0.531568, -0.311681, 0.735587)
+bones/4/scale = Vector3(0.999287, 0.988927, 0.985534)
+bones/5/position = Vector3(0.00172384, 0.12762, -0.00308564)
+bones/5/rotation = Quaternion(0.108232, 0.94265, 0.314563, -0.0273202)
+bones/5/scale = Vector3(1.00017, 0.987142, 1.01252)
+bones/6/rotation = Quaternion(0.993909, -0.0389539, -0.0136985, 0.102178)
+bones/6/scale = Vector3(0.999997, 1.01129, 0.999999)
+bones/7/position = Vector3(1.54008e-06, 0.389355, 3.15617e-07)
+bones/7/rotation = Quaternion(3.23881e-06, 2.1178e-05, 0.00260434, -0.999997)
+bones/7/scale = Vector3(1, 1, 1)
+bones/8/rotation = Quaternion(0.126235, -0.842481, 0.366823, 0.373807)
+bones/8/scale = Vector3(0.99992, 0.994661, 0.994413)
+bones/9/position = Vector3(-0.00128234, 0.127654, -0.00145781)
+bones/9/rotation = Quaternion(-0.0617309, 0.94589, 0.318407, 0.00991906)
+bones/9/scale = Vector3(1.00002, 0.994644, 1.00532)
+bones/10/rotation = Quaternion(-0.121236, -0.147591, 0.0121751, 0.981514)
+bones/11/rotation = Quaternion(-0.108446, 0.00328194, 0.00035803, 0.994097)
+bones/12/rotation = Quaternion(0.313699, 0.00638646, 0.0021101, 0.949499)
+bones/13/rotation = Quaternion(-0.131263, -0.00670024, -0.000879525, 0.991325)
+bones/14/position = Vector3(-0.0436113, 0.180816, 0.0252583)
+bones/14/rotation = Quaternion(-0.458106, 0.616721, -0.499008, -0.40098)
+bones/15/rotation = Quaternion(0.433913, 0.520251, 0.371055, 0.635119)
+bones/16/rotation = Quaternion(0.295928, 0.131613, 0.212716, 0.921876)
+bones/16/scale = Vector3(1, 0.999753, 1)
+bones/17/rotation = Quaternion(0.0199437, 0.282461, -0.0243448, 0.958762)
+bones/17/scale = Vector3(0.999999, 1.00024, 1)
+bones/18/position = Vector3(-0.0491646, 0.0500859, -0.00461843)
+bones/18/rotation = Quaternion(0.0464702, -0.786923, 0.317009, 0.52735)
+bones/18/scale = Vector3(1.00001, 0.999984, 1)
+bones/19/position = Vector3(2.88663e-07, 0.0210911, 8.98888e-07)
+bones/19/rotation = Quaternion(-0.0242228, -0.306659, 0.0625978, 0.94945)
+bones/19/scale = Vector3(0.99999, 0.999995, 1.00001)
+bones/20/rotation = Quaternion(-0.00920785, 0.438728, 0.00859625, 0.898531)
+bones/20/scale = Vector3(1.00001, 1, 0.99999)
+bones/21/position = Vector3(0.0245621, 0.0860409, -0.00147576)
+bones/21/rotation = Quaternion(-0.713071, 0.123651, -0.0286349, 0.689508)
+bones/21/scale = Vector3(1, 1, 0.999995)
+bones/22/rotation = Quaternion(-0.585554, -0.0207769, 0.00948046, 0.810312)
+bones/22/scale = Vector3(1, 1.00002, 0.999983)
+bones/23/rotation = Quaternion(-0.587469, -0.00381376, -0.00984869, 0.809178)
+bones/23/scale = Vector3(0.999999, 0.999987, 1.00001)
+bones/24/position = Vector3(-0.00260177, 0.0868646, 0.00038214)
+bones/24/rotation = Quaternion(-0.450182, 0.161463, -0.0363564, 0.877464)
+bones/24/scale = Vector3(1, 0.999975, 1.00002)
+bones/25/rotation = Quaternion(-0.64571, -0.00769499, -0.0194433, 0.763297)
+bones/25/scale = Vector3(0.999998, 1, 0.999997)
+bones/26/rotation = Quaternion(-0.639766, -0.0177411, -0.0200564, 0.768103)
+bones/26/scale = Vector3(0.999999, 0.999999, 1)
+bones/27/position = Vector3(-0.0322425, 0.0834219, -0.00188275)
+bones/27/rotation = Quaternion(-0.425603, 0.144516, -0.0385396, 0.892464)
+bones/27/scale = Vector3(1, 0.999974, 1.00002)
+bones/28/rotation = Quaternion(-0.583527, 0.00193091, -0.0536865, 0.810315)
+bones/28/scale = Vector3(1, 1.00001, 0.999995)
+bones/29/rotation = Quaternion(-0.59928, 0.00781382, -0.029632, 0.799953)
+bones/29/scale = Vector3(0.999998, 1, 0.999995)
+bones/30/position = Vector3(0.0435933, 0.180816, 0.0252588)
+bones/30/rotation = Quaternion(0.456351, 0.618092, -0.497106, 0.403226)
+bones/31/rotation = Quaternion(-0.433928, 0.520288, 0.370913, -0.635162)
+bones/32/rotation = Quaternion(0.295904, -0.131646, -0.212814, 0.921857)
+bones/32/scale = Vector3(1, 0.999931, 1)
+bones/33/position = Vector3(-7.15925e-07, 0.207321, 2.43388e-06)
+bones/33/rotation = Quaternion(0.0199765, -0.282279, 0.0246995, 0.958806)
+bones/33/scale = Vector3(0.999999, 1.00007, 1)
+bones/34/position = Vector3(0.0491431, 0.0500877, -0.00465477)
+bones/34/rotation = Quaternion(0.046703, 0.787035, -0.316929, 0.52721)
+bones/34/scale = Vector3(1, 0.999996, 1)
+bones/35/rotation = Quaternion(-0.0241585, 0.306849, -0.0624171, 0.949402)
+bones/35/scale = Vector3(0.999996, 0.999998, 1)
+bones/36/rotation = Quaternion(-0.00919865, -0.43853, -0.0083645, 0.89863)
+bones/36/scale = Vector3(1, 0.999999, 0.999997)
+bones/37/position = Vector3(-0.0246053, 0.0860427, -0.0015069)
+bones/37/rotation = Quaternion(-0.713035, -0.123602, 0.0292086, 0.68953)
+bones/37/scale = Vector3(1, 1, 0.999998)
+bones/38/rotation = Quaternion(-0.585551, 0.0207869, -0.00922037, 0.810316)
+bones/38/scale = Vector3(1, 1, 0.999995)
+bones/39/rotation = Quaternion(-0.587466, 0.00385781, 0.0101542, 0.809176)
+bones/39/scale = Vector3(1, 0.999996, 1)
+bones/40/position = Vector3(0.00255961, 0.0868697, 0.000348689)
+bones/40/rotation = Quaternion(-0.450104, -0.161248, 0.0368453, 0.877524)
+bones/40/scale = Vector3(1, 0.999993, 1.00001)
+bones/41/rotation = Quaternion(-0.645696, 0.00768163, 0.0197525, 0.763301)
+bones/41/scale = Vector3(1, 1, 0.999998)
+bones/42/rotation = Quaternion(-0.639762, 0.0177705, 0.0203457, 0.768098)
+bones/42/scale = Vector3(1, 1, 1)
+bones/43/position = Vector3(0.0322043, 0.0834298, -0.00191835)
+bones/43/rotation = Quaternion(-0.425481, -0.144288, 0.0390203, 0.892538)
+bones/43/scale = Vector3(1, 0.999993, 1.00001)
+bones/44/rotation = Quaternion(-0.583503, -0.00190842, 0.0540069, 0.810311)
+bones/44/scale = Vector3(1, 1, 0.999998)
+bones/45/rotation = Quaternion(-0.599265, -0.00776477, 0.0298958, 0.799954)
+bones/45/scale = Vector3(0.999999, 1, 0.999998)
+
+[node name="ProjSpawnTemp" type="Marker3D" parent="mannequiny/Skeleton3D/body_001" index="0"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -9.69223e-08, 1.21226, 1.10866)
+
 [node name="CameraBase" type="Node3D" parent="."]
 
 [node name="CameraRot" type="Node3D" parent="CameraBase"]
@@ -227,7 +369,7 @@ metadata/_custom_type_script = "uid://b1kscclh4m30y"
 
 [node name="AbilitySystemComponent" type="Node" parent="."]
 script = ExtResource("3_g1dw6")
-startup_abilities = Array[ExtResource("4_qjkh3")]([SubResource("Resource_8t03j"), SubResource("Resource_2ieo8")])
+startup_abilities = Array[ExtResource("4_qjkh3")]([SubResource("Resource_8t03j"), SubResource("Resource_2ieo8"), SubResource("Resource_65viv")])
 attributes = Array[ExtResource("6_boad6")]([SubResource("Resource_hg6s5")])
 metadata/_custom_type_script = "uid://blsnp5ey8ycyw"
 
@@ -259,5 +401,21 @@ script = ExtResource("13_yllr7")
 initial_state = SubResource("Resource_wodsf")
 state_list = Array[ExtResource("15_32hag")]([SubResource("Resource_e7oew"), SubResource("Resource_c35mf")])
 metadata/_custom_type_script = "uid://b62kdxgers4ji"
+
+[node name="Crosshair" type="TextureRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("16_32hag")
+expand_mode = 1
+stretch_mode = 4
 
 [editable path="mannequiny"]

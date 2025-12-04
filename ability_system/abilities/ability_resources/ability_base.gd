@@ -1,6 +1,7 @@
 class_name AbilityBase extends Resource
 
 signal ability_activated(ability : AbilityBase, msg : Dictionary)
+signal request_spawn_projectile(position : Vector3, direction : Vector3, params : ProjectileEffectParams)
 
 # enums for requirements?
 enum AbilityType { WEAPON, SPELL, MOVEMENT }
@@ -17,7 +18,7 @@ enum AbilityInputSlot { BASIC, SECONDARY, ONE, TWO, THREE, FOUR, DODGE, JUMP, NO
 @export var anim_name : String
 
 # Can have this only show by using a @tool node
-@export_subgroup("Damage")
+@export_subgroup("Damage") # remove this -> damage exists on DamageEffectParam
 @export var min_damage : float = 0.0
 @export var max_damage : float = 0.0
 
@@ -36,3 +37,6 @@ func is_on_cooldown() -> bool:
 func trigger_timer(owning_asc : AbilitySystemComponent, time : float) -> bool:
 	await owning_asc.get_tree().create_timer(time).timeout
 	return false
+	
+func on_ability_added(owning_asc : AbilitySystemComponent):
+	pass

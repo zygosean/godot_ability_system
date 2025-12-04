@@ -37,6 +37,7 @@ func add_startup_abilities():
 	abilities.assign(startup_abilities)
 	for ability in abilities:
 		ability.connect("ability_activated", _ability_activated)
+		ability.on_ability_added(self)
 	
 func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.AbilityInputSlot):
 	var found_ability : AbilityBase = null
@@ -46,8 +47,11 @@ func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.Abil
 			found_ability = ability
 	if found_ability != null:
 		abilities.append(new_ability)
+		new_ability.on_ability_added(self)
 		
 func action_timer(ability : AbilityBase):
 	await get_tree().create_timer(ability.action_speed).timeout
 	ability.in_action = false
 	
+func apply_effects_to_self(params : Array[EffectParams]):
+	pass

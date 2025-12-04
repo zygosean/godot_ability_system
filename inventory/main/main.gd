@@ -11,6 +11,6 @@ func _ready():
 	add_child(level_test)
 	
 	var player_test := player_scene.instantiate()
-	add_child(player_test)
+	level_test.add_child(player_test)
 	
 	player_test.position = Vector3(0,5,0)

@@ -11,7 +11,6 @@ func _ready():
 	orientation = global_transform
 	orientation.origin = Vector3.ZERO
 	gravity = (ProjectSettings.get_setting("physics/3d/default_gravity") * ProjectSettings.get_setting("physics/3d/default_gravity_vector")) / 2
-	print("gravity: ", gravity)
 	
 # *** Methods that States can use ***
 func get_move_input() -> Vector2:

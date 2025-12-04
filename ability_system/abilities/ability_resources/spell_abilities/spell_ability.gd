@@ -1,0 +1,1 @@
+class_name SpellAbility extends AbilityBase

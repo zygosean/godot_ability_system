@@ -57,8 +57,10 @@ var general_inputs : Array[StringName]
 @onready var ability_system_component := $AbilitySystemComponent
 @onready var inventory_component : InventoryComponent = $InventoryComponent
 @onready var item_trace := $CameraBase/CameraRot/SpringArm3D/Camera3D/ItemTrace
+@onready var crosshair := $Crosshair
 @onready var player_model := $mannequiny
 @onready var state_machine := $StateMachine
+@onready var proj_spawn_marker := $mannequiny/Skeleton3D/body_001/ProjSpawnTemp # change to a socket on skeleton
 
 @onready var hud_scn := load("res://inventory/UI/HUD/HUD.tscn")
 
@@ -192,6 +194,19 @@ func _trace_for_item():
 	if this_target == last_target: return
 		
 	_highlight_item()
+	
+func trace_for_target() -> Vector3:
+	var crosshair_pos = crosshair.global_position + crosshair.size * 0.5
+	var ray_from = camera.project_ray_origin(crosshair_pos)
+	var ray_dir = camera.project_ray_normal(crosshair_pos)
+	
+	var col = get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray_from, ray_from + ray_dir * 1000, 0b11, [self]))
+	if col.is_empty():
+		print("col empty")
+		return ray_from + ray_dir * 1000
+	else:
+		print("col no empty: ", col.position)
+		return col.position 
 				
 func _highlight_item():
 	if is_instance_valid(this_target) and this_target is Item:

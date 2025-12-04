@@ -41,7 +41,7 @@ func initialize_grids():
 	
 func _on_grid_size_completed(new_size : Vector2i):
 	set_size(new_size)
-	print("new size", new_size)
+	
 	
 func _gui_input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

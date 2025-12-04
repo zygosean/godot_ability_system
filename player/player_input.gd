@@ -61,15 +61,6 @@ func _ready():
 		set_process(false)
 		set_process_input(false) 
 		colour_rect.hide()
-		#
-	#for action in InputMap.get_actions():
-		#if action.begins_with("general"):
-			#general_actions.append(action)
-		#if action.begins_with("ability"):
-			#ability_actions.append(action)
-		#if action.begins_with("inventory"):
-			#inventory_actions.append(action)
-	
 	
 func _process(delta:float):
 	motion = Vector2(Input.get_action_strength("move_left") - Input.get_action_strength("move_right"),
@@ -90,17 +81,6 @@ func _process(delta:float):
 			emit_signal("input_pressed", action)
 		if Input.is_action_just_released(action):
 			emit_signal("input_released", action)
-	## Figure out how to handle "hold"
-	#for action in ability_actions:
-		#if Input.is_action_pressed(action):
-			#emit_signal("ability_input_pressed", action)
-	#for action in general_actions:
-		#if Input.is_action_just_pressed(action):
-			#emit_signal("general_input_pressed", action)
-	#for action in inventory_actions:
-		#if Input.is_action_just_pressed(action):
-			#emit_signal("inventory_input_pressed", action)
-	
 
 func _input(event):
 	# Make mouse aiming speed resolution-independent
@@ -114,27 +94,6 @@ func _input(event):
 		var camera_speed_this_frame = CAMERA_SENS
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			rotate_camera(event.relative * camera_speed_this_frame * scale_factor)
-	# check event against input map?
-	
-	
-
-	#_handle_ability_pressed()
-	
-	var event_string = event.as_text() + " (Physical)"
-
-	
-			
-func _handle_ability_pressed():
-	for action in ability_actions:
-		if Input.is_action_pressed(action):
-			emit_signal("ability_input_pressed", action)
-
-func _handle_general_pressed(event : StringName):
-	for action in general_actions:
-		if Input.is_action_just_pressed(action):
-			emit_signal("general_input_pressed", action)
-		
-	
 		
 func rotate_camera(move : Vector2):
 	camera_base.rotate_y(-move.x)
