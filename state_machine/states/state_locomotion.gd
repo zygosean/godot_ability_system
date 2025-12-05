@@ -1,4 +1,4 @@
-class_name LocomotionState extends State
+class_name StateLocomotion extends State
 
 @export var accel_speed : float = 50.0
 @export var rotation_speed : float = 10.0
@@ -12,6 +12,12 @@ func exit(owner : CharacterBase, msg := {}):
 	
 func handle_input(owner : CharacterBase, input : Dictionary):
 	pass
+	
+func rotate_owner(owner : CharacterBase, target : Vector3, delta : float):
+	if target.length() > 0.1:
+		var q_from: Quaternion = owner.orientation.basis.get_rotation_quaternion()
+		var q_to: Quaternion = Transform3D().looking_at(-target, Vector3.UP).basis.get_rotation_quaternion()
+		owner.orientation.basis = Basis(q_from.slerp(q_to, delta * rotation_speed))
 
 func physics_step(owner : CharacterBase, delta : float):
 	super(owner, delta)
@@ -29,10 +35,7 @@ func physics_step(owner : CharacterBase, delta : float):
 	
 	var target : Vector3 = movement_x * motion.x + movement_z * motion.y
 	
-	if target.length() > 0.1:
-		var q_from: Quaternion = owner.orientation.basis.get_rotation_quaternion()
-		var q_to: Quaternion = Transform3D().looking_at(-target, Vector3.UP).basis.get_rotation_quaternion()
-		owner.orientation.basis = Basis(q_from.slerp(q_to, delta * rotation_speed))
+	rotate_owner(owner, target, delta)
 
 # Apply root motion if you want (same as your original; optional).
 	#var root_motion := Transform3D(owner.anim_tree.get_root_motion_rotation(), owner.anim_tree.get_root_motion_position())

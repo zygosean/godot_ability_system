@@ -131,6 +131,7 @@ func _connect_signals():
 	
 	ability_system_component.animate_ability.connect(animate_one_shots)
 	
+	
 func _connect_player_input_signals():
 	
 	#player_input.ability_input_pressed.connect(ability_system_component.handle_input)

@@ -3,6 +3,7 @@ class_name AbilitySystemComponent extends Node
 
 signal animate_ability(anim_name : String, time : float)
 signal override_locomotion(duration : float)
+signal ability_activated
 
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
@@ -29,6 +30,7 @@ func activate_ability(activate : AbilityBase):
 	if not activate.anim_name.is_empty():
 		emit_signal("animate_ability", activate.anim_name, activate.action_speed)
 	action_timer(activate)
+	emit_signal("ability_activated")
 
 func _ability_activated(ability : AbilityBase):
 	pass

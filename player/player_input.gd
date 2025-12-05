@@ -1,15 +1,6 @@
 ## "Glue" script
 extends MultiplayerSynchronizer
 
-# general input
-signal general_input_pressed(general_input : StringName)
-
-# ability system input
-signal ability_input_pressed(ability_input : StringName)
-
-# inventory component input
-signal inventory_input_pressed(inventory_input : StringName)
-
 # signal any input pressed to decouple types - sort the types in the 'owning' class
 signal input_pressed(input : StringName)
 signal input_released(input : StringName)
@@ -48,10 +39,6 @@ var is_moving : bool = false
 	set(value):
 		player_id = value
 		$InputSynchronizer.set_multiplayer_authority(value)
-		
-var general_actions : Array[StringName]
-var ability_actions : Array[StringName]
-var inventory_actions : Array[StringName]
 
 func _ready():
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
@@ -100,7 +87,6 @@ func rotate_camera(move : Vector2):
 	camera_base.orthonormalize()
 	# Example has deg_to_rad in the const var def
 	camera_rot.rotation.x = clamp(camera_rot.rotation.x + move.y, deg_to_rad(CLAMP_HEAD_ROTATION_MIN), deg_to_rad(CLAMP_HEAD_ROTATION_MAX))
-
 
 func get_camera_rotation_basis() -> Basis:
 	return camera_rot.global_transform.basis
