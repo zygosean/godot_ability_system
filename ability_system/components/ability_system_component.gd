@@ -11,6 +11,11 @@ signal ability_activated
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
 
+var char_state : CharacterStateComponent
+
+func init(char_state_comp : CharacterStateComponent):
+	char_state = char_state_comp
+
 func handle_input(event : StringName):
 	
 	for ability in abilities:

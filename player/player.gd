@@ -54,13 +54,13 @@ var general_inputs : Array[StringName]
 @onready var camera_base := $CameraBase
 @onready var camera := $CameraBase/CameraRot/SpringArm3D/Camera3D
 @onready var mesh_instance := $mannequiny/Skeleton3D/body_001
-@onready var ability_system_component := $AbilitySystemComponent
 @onready var inventory_component : InventoryComponent = $InventoryComponent
 @onready var item_trace := $CameraBase/CameraRot/SpringArm3D/Camera3D/ItemTrace
 @onready var crosshair := $Crosshair
 @onready var player_model := $mannequiny
-@onready var state_machine := $StateMachine
 @onready var proj_spawn_marker := $mannequiny/Skeleton3D/body_001/ProjSpawnTemp # change to a socket on skeleton
+
+@onready var character_state_comp := $CharacterStateComponent 
 
 @onready var hud_scn := load("res://inventory/UI/HUD/HUD.tscn")
 
@@ -83,7 +83,7 @@ func _ready():
 	inventory_component.set_inventory_menu()
 	inventory_menu = inventory_component.inventory_menu
 	
-	ability_system_component.add_startup_abilities()
+	character_state_comp.ability_system_component.add_startup_abilities()
 	
 	_connect_signals()
 	
@@ -91,8 +91,8 @@ func _process(delta: float):
 	if !UPDATE_ON_PHYSICS:
 		#_handle_move_state_input(delta)
 		var input_data := { "motion" : player_input.motion }
-		state_machine.dispatch_input(input_data)
-		state_machine.tick_physics(delta)
+		character_state_comp.state_machine.dispatch_input(input_data)
+		character_state_comp.state_machine.tick_physics(delta)
 		
 	_trace_for_item()
 	
@@ -118,7 +118,7 @@ func _physics_process(delta: float) -> void:
 	#_handle_move_state_input(delta)
 	var input_data := { "motion" : player_input.motion }
 	#state_machine.dispatch_input(input_data)
-	state_machine.tick_physics(delta)
+	character_state_comp.state_machine.tick_physics(delta)
 	
 	#_handle_global_input(delta)
 	animate("state", delta)
@@ -129,7 +129,7 @@ func _connect_signals():
 	inventory_component.connect_add_item()
 	inventory_component.inv_hover_item_created.connect(hud.add_hover_item)
 	
-	ability_system_component.animate_ability.connect(animate_one_shots)
+	character_state_comp.ability_system_component.animate_ability.connect(animate_one_shots)
 	
 	
 func _connect_player_input_signals():
@@ -155,7 +155,7 @@ func animate_one_shots(animation : String, time : float):
 func parse_input_action(action : StringName):
 	var component : Node
 	if action.begins_with("ability"):
-		component = ability_system_component
+		component = character_state_comp.ability_system_component
 	if action.begins_with("inventory"):
 		component = inventory_component
 	if action.begins_with("general"):

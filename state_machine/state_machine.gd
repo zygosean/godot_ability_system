@@ -9,8 +9,13 @@ var owner_body : CharacterBase
 var current_state : State
 var states : Dictionary = {}
 
+var char_state : CharacterStateComponent
+
+func init(char_state_comp : CharacterStateComponent):
+	char_state = char_state_comp
+
 func _ready():
-	owner_body = get_parent() as CharacterBase
+	owner_body = get_parent().get_parent() as CharacterBase # FIX THIS
 	assert(owner_body != null)
 	
 	for s in state_list:
