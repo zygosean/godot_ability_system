@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://crxutohg55hrg"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_a6tpd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a6tpd"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_a6tpd"]
+noise_type = 3
+fractal_octaves = 8
+fractal_lacunarity = 8.0
+fractal_gain = 0.2
+fractal_weighted_strength = 0.5
+domain_warp_enabled = true
+domain_warp_type = 2
+domain_warp_amplitude = 50.0
+domain_warp_frequency = 0.1
+domain_warp_fractal_octaves = 1
+domain_warp_fractal_lacunarity = 10.0
+domain_warp_fractal_gain = 0.2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_hpafy"]
+noise = SubResource("FastNoiseLite_a6tpd")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hpafy"]
+noise_type = 3
+frequency = 0.0004
+fractal_octaves = 8
+fractal_lacunarity = 8.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wy2d4"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_hpafy")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_18e2o"]
+albedo_color = Color(0.545098, 1, 1, 1)
+metallic = 1.0
+metallic_specular = 0.48
+roughness = 0.6
+emission_enabled = true
+emission_on_uv2 = true
+emission_texture = SubResource("NoiseTexture2D_hpafy")
+subsurf_scatter_strength = 1.0
+subsurf_scatter_texture = SubResource("NoiseTexture2D_wy2d4")
+
+[node name="DebugMesh" type="CharacterBody3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_a6tpd")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_a6tpd")
+surface_material_override/0 = SubResource("StandardMaterial3D_18e2o")

@@ -14,7 +14,7 @@ func activate(component : AbilitySystemComponent):
 		# turn character to forward camera dir
 		var target_loc : Vector3 = asc_owner.trace_for_target()
 		
-		var direction : Vector3 = (target_loc - asc_owner.proj_spawn_marker.position).normalized() 
+		var direction : Vector3 = (target_loc - asc_owner.proj_spawn_marker.position).normalized()
 		EffectSpawner.spawn_projectile(asc_owner.proj_spawn_marker.global_position, direction, projectile_params)
 		emit_signal("request_spawn_projectile", asc_owner.proj_spawn_marker.global_position, direction, projectile_params)
 		

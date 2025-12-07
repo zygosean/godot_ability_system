@@ -58,7 +58,7 @@ var general_inputs : Array[StringName]
 @onready var item_trace := $CameraBase/CameraRot/SpringArm3D/Camera3D/ItemTrace
 @onready var crosshair := $Crosshair
 @onready var player_model := $mannequiny
-@onready var proj_spawn_marker := $mannequiny/Skeleton3D/body_001/ProjSpawnTemp # change to a socket on skeleton
+@onready var proj_spawn_marker := $CameraBase/ProjSpawnTemp # change to a socket on skeleton
 
 @onready var character_state_comp := $CharacterStateComponent 
 
@@ -204,9 +204,11 @@ func trace_for_target() -> Vector3:
 	var col = get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray_from, ray_from + ray_dir * 1000, 0b11, [self]))
 	if col.is_empty():
 		print("col empty")
+		EffectSpawner.spawn_debug_mesh(ray_from + ray_dir * 1000, load("res://debug/debug_res.tres"))
 		return ray_from + ray_dir * 1000
 	else:
 		print("col no empty: ", col.position)
+		EffectSpawner.spawn_debug_mesh(col.position, load("res://debug/debug_res.tres"))
 		return col.position 
 				
 func _highlight_item():

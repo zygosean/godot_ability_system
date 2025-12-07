@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DebugMeshParams" load_steps=3 format=3 uid="uid://brn1264jvq6ik"]
+
+[ext_resource type="PackedScene" uid="uid://crxutohg55hrg" path="res://debug/debug_mesh.tscn" id="1_7n40e"]
+[ext_resource type="Script" uid="uid://cel8tqmrlaj8i" path="res://ability_system/abilities/effects/debug_mesh_params.gd" id="1_fi4sb"]
+
+[resource]
+script = ExtResource("1_fi4sb")
+debug_mesh = ExtResource("1_7n40e")
+ability_level = 1
+metadata/_custom_type_script = "uid://cel8tqmrlaj8i"

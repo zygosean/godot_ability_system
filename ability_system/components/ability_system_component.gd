@@ -23,7 +23,6 @@ func handle_input(event : StringName):
 		if input_found == AbilityBase.AbilityInputSlot.NONE: return
 		if input_found == ability.input_action:
 			activate_ability(ability)
-			print(ability)
 			
 
 func activate_ability(activate : AbilityBase):

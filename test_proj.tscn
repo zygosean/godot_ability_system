@@ -29,7 +29,6 @@ script = ExtResource("1_wvvro")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_cw7jy")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_cw7jy")
-skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_wvvro")
