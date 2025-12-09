@@ -1,7 +1,8 @@
 class_name AbilityBase extends Resource
 
 signal ability_activated(ability : AbilityBase, msg : Dictionary)
-signal request_spawn_projectile(position : Vector3, direction : Vector3, params : ProjectileEffectParams)
+signal request_spawn(global_xform : Transform3D, params : ProjectileEffectParams)
+signal activate_test(callable : Callable)
 
 # enums for requirements?
 enum AbilityType { WEAPON, SPELL, MOVEMENT }

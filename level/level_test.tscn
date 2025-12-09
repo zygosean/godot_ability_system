@@ -1,6 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://dyfgd7eq7v11u"]
+[gd_scene load_steps=13 format=3 uid="uid://dyfgd7eq7v11u"]
 
 [ext_resource type="PackedScene" uid="uid://c5bwmvoq7s5dh" path="res://inventory/item/item.tscn" id="1_qr3a6"]
+[ext_resource type="Script" uid="uid://dug3acokoqfsi" path="res://level/spawners/spawner.gd" id="2_di04x"]
+[ext_resource type="PackedScene" uid="uid://brg01ejktnikw" path="res://test_proj.tscn" id="3_e4gb8"]
+[ext_resource type="Script" uid="uid://ceriac83nh6gh" path="res://level/pools/pooler.gd" id="4_6s7m6"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_76lkf"]
 
@@ -60,3 +63,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5252, 0.622388, -1.95496)
 
 [node name="Item3" parent="." instance=ExtResource("1_qr3a6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.85248, 0.622388, -4.10657)
+
+[node name="Spawner" type="Node" parent="." node_paths=PackedStringArray("pool")]
+script = ExtResource("2_di04x")
+pool = NodePath("../Pooler")
+node_to_spawn = ExtResource("3_e4gb8")
+spawn_location = null
+metadata/_custom_type_script = "uid://dug3acokoqfsi"
+
+[node name="Pooler" type="Node" parent="."]
+script = ExtResource("4_6s7m6")
+metadata/_custom_type_script = "uid://ceriac83nh6gh"

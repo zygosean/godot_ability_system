@@ -203,11 +203,9 @@ func trace_for_target() -> Vector3:
 	
 	var col = get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(ray_from, ray_from + ray_dir * 1000, 0b11, [self]))
 	if col.is_empty():
-		print("col empty")
-		EffectSpawner.spawn_debug_mesh(ray_from + ray_dir * 1000, load("res://debug/debug_res.tres"))
+		EffectSpawner.spawn_debug_mesh(ray_from + ray_dir * 50, load("res://debug/debug_res.tres"))
 		return ray_from + ray_dir * 1000
 	else:
-		print("col no empty: ", col.position)
 		EffectSpawner.spawn_debug_mesh(col.position, load("res://debug/debug_res.tres"))
 		return col.position 
 				

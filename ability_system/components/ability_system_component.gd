@@ -7,6 +7,7 @@ signal ability_activated
 
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
+@export var pooler : Pool
 
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
@@ -43,7 +44,11 @@ func add_startup_abilities():
 	abilities.assign(startup_abilities)
 	for ability in abilities:
 		ability.connect("ability_activated", _ability_activated)
+		ability.connect("activate_test", _activate_test)
 		ability.on_ability_added(self)
+		
+func _activate_test(callable : Callable):
+	callable.call()
 	
 func _assign_ability_to_slot(new_ability : AbilityBase, input : AbilityBase.AbilityInputSlot):
 	var found_ability : AbilityBase = null

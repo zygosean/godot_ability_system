@@ -14,6 +14,7 @@ func _physics_process(delta : float):
 	if time_alive < 0:
 		hit = true
 		explode.rpc()
+		destroy()
 	var col := move_and_collide(delta * velocity)
 	if col:
 		var collider = col.get_collider()
