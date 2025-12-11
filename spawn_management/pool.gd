@@ -1,5 +1,7 @@
 class_name Pool extends Resource
 
+signal spawn_
+
 @export var type : PackedScene
 @export var num_to_pool : int
 
@@ -12,8 +14,10 @@ func _init():
 		store()
 	num_available = num_to_pool
 		
-func spawn():
-	if num_available < pool.size()
+func spawn(num_to_spawn : int):
+	if num_available < pool.size(): _grow_pool() # needs to be batched
+	
+	
 	
 func store():
 	var obj = type.instantiate()

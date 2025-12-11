@@ -7,7 +7,7 @@ signal ability_activated
 
 @export var startup_abilities : Array[AbilityBase]
 @export var attributes : Array[AttributeBase]
-@export var pooler : Pool
+@export var pooler : NodePath
 
 var attribute_set : AttributeSetBase
 var abilities : Array[AbilityBase]
